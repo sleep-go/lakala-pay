@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"github.com/sleep-go/lakala-pay/util"
 	"github.com/tjfoc/gmsm/sm4"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
@@ -123,6 +124,37 @@ func (c *Client) SignatureVerification(authorization, body string) bool {
 	return verifyMessage(message, publicKey, signature)
 }
 
+// 验签，成功返回请求body
+func (c *Client) VerifySign(r *http.Request) (string, error) {
+	appid := r.Header.Get("Lklapi_Appid")
+	serialNo := r.Header.Get("Lklapi_Serial")
+	timestamp := r.Header.Get("Lklapi_Timestamp")
+	nonce := r.Header.Get("Lklapi_Nonce")
+	sign := r.Header.Get("Lklapi_Sign")
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+	defer r.Body.Close()
+	signature, _ := base64.StdEncoding.DecodeString(sign)
+	message := fmt.Sprintf("%s\n%s\n%s\n%s\n%s\n", appid, serialNo, timestamp, nonce, body)
+	// 解析公钥证书
+	lklCertificate, err := loadPublicKeyNew(c.publicCertPath)
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+	err = lklCertificate.CheckSignature(x509.SHA256WithRSA, []byte(message), signature)
+	if err != nil {
+		log.Printf("verify sign error: %v \n appid: %s, serialNo: %s, ts: %s, nonce: %s, sign: %s, body: %s",
+			err, appid, serialNo, timestamp, nonce, sign, body)
+		return "", err
+	}
+	return string(body), err
+}
+
 // 消息验签
 func verifyMessage(message string, publicKey *rsa.PublicKey, signature []byte) bool {
 	// 计算消息的 SHA-256 散列值
@@ -195,6 +227,22 @@ func loadPublicKey(path string) (*rsa.PublicKey, error) {
 		return publicKey, errors.New("invalid public key type")
 	}
 	return publicKey, nil
+}
+
+func loadPublicKeyNew(path string) (*x509.Certificate, error) {
+	// 读取证书公钥
+	certificateBytes, err := os.ReadFile(path)
+	if err != nil {
+		log.Println("Failed to read certificate:", err)
+		return nil, err
+	}
+	// 解析公钥
+	block, _ := pem.Decode(certificateBytes)
+	if block == nil {
+		return nil, err
+	}
+	certificate, err := x509.ParseCertificate(block.Bytes)
+	return certificate, nil
 }
 
 // ECB模式加密（PKCS5Padding）
