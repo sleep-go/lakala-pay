@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/sleep-go/lakala-pay/model"
 	"github.com/sleep-go/lakala-pay/util"
-	"io"
 	"net/http"
 	"reflect"
 )
@@ -92,12 +91,6 @@ func doRequest[T any, D any](c *Client, url string, req *T, needEncrypt bool) (*
 	request.Header.Set("Accept", "application/json")
 	request.Header.Set("Authorization", auth)
 	resp, err := c.Http.Do(request)
-	//fmt.Println("-----------")
-	//fmt.Println(auth)
-	fmt.Println("-----------")
-	p, _ := io.ReadAll(resp.Body)
-	fmt.Println(string(p))
-	fmt.Println("-----------")
 	if err != nil {
 		return nil, err
 	}
