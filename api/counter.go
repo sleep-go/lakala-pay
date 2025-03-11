@@ -8,6 +8,7 @@ import (
 	"github.com/sleep-go/lakala-pay/util"
 	"io"
 	"net/http"
+	"reflect"
 )
 
 const (
@@ -17,6 +18,17 @@ const (
 	refundUrl        = "/api/v3/labs/relation/refund"
 )
 
+func hasField(i interface{}, fieldName string) bool {
+	v := reflect.ValueOf(i)
+	if v.Kind() == reflect.Ptr {
+		v = v.Elem()
+	}
+	if v.Kind() != reflect.Struct {
+		return false
+	}
+	return v.FieldByName(fieldName).IsValid()
+}
+
 func newBuffer[T any](req *T) *bytes.Buffer {
 	m := model.BaseReq[T]{
 		ReqTime: util.GetReqTime(),
@@ -24,6 +36,9 @@ func newBuffer[T any](req *T) *bytes.Buffer {
 		ReqData: req,
 	}
 	data, err := json.Marshal(m)
+	if hasField(req, "Ver") {
+		data, err = json.Marshal(req)
+	}
 	if err != nil {
 		return nil
 	}
@@ -37,11 +52,14 @@ func newBufferEncrypt[T any](req *T) *bytes.Buffer {
 		ReqData: req,
 	}
 	data, err := json.Marshal(m)
+	if hasField(req, "Ver") {
+		data, err = json.Marshal(req)
+	}
 	if err != nil {
 		return nil
 	}
-	fmt.Println("----------------")
-	fmt.Println("param:", string(data))
+	//fmt.Println("----------------")
+	//fmt.Println("param:", string(data))
 
 	key := model.KEY_TEST
 	src := data
@@ -59,8 +77,8 @@ func doRequest[T any, D any](c *Client, url string, req *T, needEncrypt bool) (*
 	} else {
 		reqStr = newBuffer[T](req)
 	}
-	//fmt.Println("----------------")
-	//fmt.Println("param:", reqStr.String())
+	fmt.Println("----------------")
+	fmt.Println("param:", reqStr.String())
 	auth, err := c.GetAuthorization(reqStr.Bytes())
 	if err != nil {
 		return nil, err

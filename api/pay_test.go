@@ -11,10 +11,10 @@ func TestPay(t *testing.T) {
 	client := NewClient(model.APPID_TEST, model.SERIAL_NO_TEST, model.KEY_PATH_TEST, model.CERT_PATH_TEST, false)
 	payinfo := model.PayerInfo{
 		IdentityType: "OutBankCard",
-		AcctNo:       "xxx",
-		AcctName:     "xxx",
+		AcctNo:       "6217681406150014",
+		AcctName:     "张友林",
 		BankName:     "中信银行天津广开支行",
-		BankNo:       "xxx",
+		BankNo:       "302110023286",
 		AcctType:     "1",
 	}
 	req := model.PayReq{
