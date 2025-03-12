@@ -33,16 +33,28 @@ func (c *Client) OrderClose(req *model.OrderCloseReq) (resp *model.OrderCloseRes
 	return doRequest[model.OrderCloseReq, model.OrderCloseRes](c, orderCloseUrl, req)
 }
 
+type CallbackResp struct {
+	Authorization string
+	Body          string
+	Notify        *model.OrderNotify
+}
+
 // OrderNotifyCallback 收银台订单回调通知
-func (c *Client) OrderNotifyCallback(r *http.Request) (resp *model.OrderNotify, err error) {
+func (c *Client) OrderNotifyCallback(r *http.Request) (*CallbackResp, error) {
+	auth := r.Header.Get("Authorization")
 	body, err := io.ReadAll(r.Body)
+	var resp = &CallbackResp{
+		Authorization: auth,
+		Body:          string(body),
+		Notify:        new(model.OrderNotify),
+	}
 	if err != nil {
-		return nil, err
+		return resp, err
 	}
-	if !c.SignatureVerification(r.Header.Get("Authorization"), string(body)) {
-		return nil, errors.New("签名验证失败")
+	if !c.SignatureVerification(auth, string(body)) {
+		return resp, errors.New("签名验证失败")
 	}
-	err = json.Unmarshal(body, &resp)
+	err = json.Unmarshal(body, &resp.Notify)
 	return resp, err
 }
 
