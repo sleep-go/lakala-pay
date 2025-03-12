@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/sleep-go/lakala-pay/model"
+	"io"
+	"net/http"
 )
 
 const (
@@ -32,11 +34,15 @@ func (c *Client) OrderClose(req *model.OrderCloseReq) (resp *model.OrderCloseRes
 }
 
 // OrderNotifyCallback 收银台订单回调通知
-func (c *Client) OrderNotifyCallback(authorization, body string) (resp *model.OrderNotify, err error) {
-	if !c.SignatureVerification(authorization, body) {
+func (c *Client) OrderNotifyCallback(r *http.Request) (resp *model.OrderNotify, err error) {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		return nil, err
+	}
+	if !c.SignatureVerification(r.Header.Get("Authorization"), string(body)) {
 		return nil, errors.New("签名验证失败")
 	}
-	err = json.Unmarshal([]byte(body), &resp)
+	err = json.Unmarshal(body, &resp)
 	return resp, err
 }
 
