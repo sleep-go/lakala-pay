@@ -8,7 +8,7 @@ import (
 
 func TestPay(t *testing.T) {
 	orderId := model.CreateOrderStr()
-	client := NewClient(model.APPID_TEST, model.SERIAL_NO_TEST, model.KEY_PATH_TEST, model.CERT_PATH_TEST, false)
+	client := NewClient(model.APPID_TEST, model.SERIAL_NO_TEST, model.KEY_PATH_TEST, model.CERT_PATH_TEST, false, model.KEY_TEST)
 	payinfo := model.PayerInfo{
 		IdentityType: "OutBankCard",
 		AcctNo:       "6217681406150014",
@@ -36,7 +36,7 @@ func TestPayQuery(t *testing.T) {
 	orderId := "1740981618428919732"
 	PayOrderNo := "25030311012001101011001738446"
 	PayOrderNo = ""
-	client := NewClient(model.APPID_TEST, model.SERIAL_NO_TEST, model.KEY_PATH_TEST, model.CERT_PATH_TEST, false)
+	client := NewClient(model.APPID_TEST, model.SERIAL_NO_TEST, model.KEY_PATH_TEST, model.CERT_PATH_TEST, false, "")
 	req := model.PayQueryReq{
 		OutOrderNo: orderId,
 		MerchantNo: model.MERCHANT_NO_TEST,

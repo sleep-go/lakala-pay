@@ -12,9 +12,9 @@ const (
 
 // 商户分账业务开通申请
 func (c *Client) apply(req *model.ApplyReq) (*model.ApplyRet, error) {
-	return doRequest[model.ApplyReq, model.ApplyRet](c, applyUrl, req, false)
+	return doRequest[model.ApplyReq, model.ApplyRet](c, applyUrl, req)
 }
 
 func (c *Client) upload(req *model.UploadReq) (*model.UploadRet, error) {
-	return doRequest[model.UploadReq, model.UploadRet](c, uploadUrl, req, false)
+	return doRequest[model.UploadReq, model.UploadRet](c, uploadUrl, req)
 }

@@ -40,9 +40,10 @@ type Client struct {
 	IsProd         bool
 	Host           string
 	Http           *http.Client
+	EncryptKey     string
 }
 
-func NewClient(appid, serialNo, path, certPath string, prod bool) *Client {
+func NewClient(appid, serialNo, path, certPath string, prod bool, encryptKey string) *Client {
 	host := HOST_TEST
 	if prod {
 		host = HOST
@@ -57,6 +58,7 @@ func NewClient(appid, serialNo, path, certPath string, prod bool) *Client {
 		IsProd:         prod,
 		Host:           host,
 		Http:           http.DefaultClient,
+		EncryptKey:     encryptKey,
 	}
 }
 func hasField(i interface{}, fieldName string) bool {
@@ -84,7 +86,7 @@ func newBuffer[T any](req *T) *bytes.Buffer {
 	}
 	return bytes.NewBuffer(data)
 }
-func newBufferEncrypt[T any](req *T) *bytes.Buffer {
+func newBufferEncrypt[T any](req *T, encryptKey string) *bytes.Buffer {
 	m := model.BaseReq[T]{
 		ReqTime: util.GetReqTime(),
 		Version: "3.0",
@@ -97,19 +99,17 @@ func newBufferEncrypt[T any](req *T) *bytes.Buffer {
 	if err != nil {
 		return nil
 	}
-	key := model.KEY_TEST
-	src := data
-	endata, _ := EncryptECB([]byte(key), []byte(src))
+	endata, _ := EncryptECB([]byte(encryptKey), data)
 	data = []byte(endata)
 
 	return bytes.NewBuffer(data)
 }
 
 // doRequest 统一请求方法
-func doRequest[T any, D any](c *Client, url string, req *T, needEncrypt bool) (*D, error) {
+func doRequest[T any, D any](c *Client, url string, req *T) (*D, error) {
 	var reqStr *bytes.Buffer
-	if needEncrypt {
-		reqStr = newBufferEncrypt[T](req)
+	if c.EncryptKey != "" {
+		reqStr = newBufferEncrypt[T](req, c.EncryptKey)
 	} else {
 		reqStr = newBuffer[T](req)
 	}

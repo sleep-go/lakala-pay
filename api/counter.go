@@ -15,17 +15,17 @@ const (
 
 // OrderSpecialCreate 收银台订单创建
 func (c *Client) OrderSpecialCreate(req *model.SpecialCreateReq) (*model.SpecialCreateRes, error) {
-	return doRequest[model.SpecialCreateReq, model.SpecialCreateRes](c, specialCreateUrl, req, false)
+	return doRequest[model.SpecialCreateReq, model.SpecialCreateRes](c, specialCreateUrl, req)
 }
 
 // OrderQuery 收银台订单查询
 func (c *Client) OrderQuery(req *model.OrderQueryReq) (*model.OrderQueryRes, error) {
-	return doRequest[model.OrderQueryReq, model.OrderQueryRes](c, orderQueryUrl, req, false)
+	return doRequest[model.OrderQueryReq, model.OrderQueryRes](c, orderQueryUrl, req)
 }
 
 // OrderClose 收银台订单关单
 func (c *Client) OrderClose(req *model.OrderCloseReq) (resp *model.OrderCloseRes, err error) {
-	return doRequest[model.OrderCloseReq, model.OrderCloseRes](c, orderCloseUrl, req, false)
+	return doRequest[model.OrderCloseReq, model.OrderCloseRes](c, orderCloseUrl, req)
 }
 
 // OrderNotifyCallback 收银台订单回调通知

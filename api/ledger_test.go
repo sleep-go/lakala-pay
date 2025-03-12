@@ -12,7 +12,7 @@ import (
 
 func TestUpload(t *testing.T) {
 	orderId := model.CreateOrderStr()
-	client := NewClient(model.APPID_TEST, model.SERIAL_NO_TEST, model.KEY_PATH_TEST, model.CERT_PATH_TEST, false)
+	client := NewClient(model.APPID_TEST, model.SERIAL_NO_TEST, model.KEY_PATH_TEST, model.CERT_PATH_TEST, false, "")
 	file := "../data/name.pdf"
 	content, err := os.ReadFile(file)
 	if err != nil {
@@ -43,7 +43,7 @@ func TestUpload(t *testing.T) {
 
 func TestApply(t *testing.T) {
 	orderId := model.CreateOrderStr()
-	client := NewClient(model.APPID_TEST, model.SERIAL_NO_TEST, model.KEY_PATH_TEST, model.CERT_PATH_TEST, false)
+	client := NewClient(model.APPID_TEST, model.SERIAL_NO_TEST, model.KEY_PATH_TEST, model.CERT_PATH_TEST, false, "")
 	req := model.ApplyReqData{
 		Version:              "1.0",
 		OrderNo:              orderId,
