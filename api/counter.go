@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/sleep-go/lakala-pay/model"
 )
 
@@ -21,6 +22,7 @@ func (c *Client) OrderSpecialCreate(req *model.SpecialCreateReq) (*model.Special
 
 // OrderQuery 收银台订单查询
 func (c *Client) OrderQuery(req *model.OrderQueryReq) (*model.OrderQueryRes, error) {
+	fmt.Println(req)
 	return doRequest[model.OrderQueryReq, model.OrderQueryRes](c, orderQueryUrl, req)
 }
 

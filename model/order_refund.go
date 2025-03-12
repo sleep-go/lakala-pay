@@ -106,9 +106,11 @@ type RefundQueryRequest struct {
 
 // 退款响应主体结构
 type RefundQueryResponse struct {
-	Msg        string            `json:"msg"`         // 返回信息描述（示例："执行成功"）
-	Code       string            `json:"code"`        // 返回码（示例："000000"）
-	RefundList []RefundQueryItem `json:"refund_list"` // [必填] 退款明细列表
+	Msg     string `json:"msg"`  // 返回信息描述（示例："执行成功"）
+	Code    string `json:"code"` // 返回码（示例："000000"）
+	ResData struct {
+		RefundList []RefundQueryItem `json:"refund_list"`
+	} `json:"resp_data"` // [必填] 退款明细列表
 }
 
 // 单笔退款明细结构
