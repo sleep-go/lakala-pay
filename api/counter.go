@@ -1,6 +1,8 @@
 package api
 
 import (
+	"encoding/json"
+	"errors"
 	"github.com/sleep-go/lakala-pay/model"
 )
 
@@ -24,4 +26,13 @@ func (c *Client) OrderQuery(req *model.OrderQueryReq) (*model.OrderQueryRes, err
 // OrderClose 收银台订单关单
 func (c *Client) OrderClose(req *model.OrderCloseReq) (resp *model.OrderCloseRes, err error) {
 	return doRequest[model.OrderCloseReq, model.OrderCloseRes](c, orderCloseUrl, req, false)
+}
+
+// OrderNotifyCallback 收银台订单回调通知
+func (c *Client) OrderNotifyCallback(authorization, body string) (resp *model.OrderNotify, err error) {
+	if !c.SignatureVerification(authorization, body) {
+		return nil, errors.New("签名验证失败")
+	}
+	err = json.Unmarshal([]byte(body), &resp)
+	return resp, err
 }
