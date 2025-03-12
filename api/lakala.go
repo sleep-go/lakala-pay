@@ -3,14 +3,15 @@ package api
 import (
 	"bytes"
 	"crypto"
-	randc "crypto/rand"
 	"crypto/rsa"
 	"crypto/sha256"
 	"crypto/x509"
 	"encoding/base64"
+	"encoding/json"
 	"encoding/pem"
 	"errors"
 	"fmt"
+	"github.com/sleep-go/lakala-pay/model"
 	"github.com/sleep-go/lakala-pay/util"
 	"github.com/tjfoc/gmsm/sm4"
 	"io"
@@ -18,6 +19,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"reflect"
 	"strings"
 	"time"
 )
@@ -57,15 +59,83 @@ func NewClient(appid, serialNo, path, certPath string, prod bool) *Client {
 		Http:           http.DefaultClient,
 	}
 }
+func hasField(i interface{}, fieldName string) bool {
+	v := reflect.ValueOf(i)
+	if v.Kind() == reflect.Ptr {
+		v = v.Elem()
+	}
+	if v.Kind() != reflect.Struct {
+		return false
+	}
+	return v.FieldByName(fieldName).IsValid()
+}
+func newBuffer[T any](req *T) *bytes.Buffer {
+	m := model.BaseReq[T]{
+		ReqTime: util.GetReqTime(),
+		Version: "3.0",
+		ReqData: req,
+	}
+	data, err := json.Marshal(m)
+	if hasField(req, "Ver") {
+		data, err = json.Marshal(req)
+	}
+	if err != nil {
+		return nil
+	}
+	return bytes.NewBuffer(data)
+}
+func newBufferEncrypt[T any](req *T) *bytes.Buffer {
+	m := model.BaseReq[T]{
+		ReqTime: util.GetReqTime(),
+		Version: "3.0",
+		ReqData: req,
+	}
+	data, err := json.Marshal(m)
+	if hasField(req, "Ver") {
+		data, err = json.Marshal(req)
+	}
+	if err != nil {
+		return nil
+	}
+	key := model.KEY_TEST
+	src := data
+	endata, _ := EncryptECB([]byte(key), []byte(src))
+	data = []byte(endata)
 
-// GetAuthorization 生成签名
-func (c *Client) GetAuthorization(body []byte) (string, error) {
-	//body2, _ := base64.StdEncoding.DecodeString(string(body))
-	//body = []byte(body2)
+	return bytes.NewBuffer(data)
+}
 
-	//body2 := base64.StdEncoding.EncodeToString(body)
-	//body = []byte(body2)
+// doRequest 统一请求方法
+func doRequest[T any, D any](c *Client, url string, req *T, needEncrypt bool) (*D, error) {
+	var reqStr *bytes.Buffer
+	if needEncrypt {
+		reqStr = newBufferEncrypt[T](req)
+	} else {
+		reqStr = newBuffer[T](req)
+	}
+	fmt.Println("----------------")
+	fmt.Println("param:", reqStr.String())
+	auth, err := c.getAuthorization(reqStr.Bytes())
+	if err != nil {
+		return nil, err
+	}
+	request, err := http.NewRequest(http.MethodPost, c.Host+url, reqStr)
+	if err != nil {
+		return nil, err
+	}
 
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Accept", "application/json")
+	request.Header.Set("Authorization", auth)
+	resp, err := c.Http.Do(request)
+	if err != nil {
+		return nil, err
+	}
+	return util.ParseResp[D](resp)
+}
+
+// getAuthorization 生成签名
+func (c *Client) getAuthorization(body []byte) (string, error) {
 	nonceStr := util.RandStr(12)
 	message := fmt.Sprintf("%s\n%s\n%d\n%s\n%s\n", c.appid, c.serialNo, c.timestamp, nonceStr, body)
 	privateKey, err := loadPrivateKey(c.privateKeyPath)
@@ -80,15 +150,6 @@ func (c *Client) GetAuthorization(body []byte) (string, error) {
 		return "", err
 	}
 	signatureBase64 := base64.StdEncoding.EncodeToString(signature)
-	//fmt.Println(signatureBase64)
-	//
-	//signature2, err := signMessage2(message, privateKey)
-	//if err != nil {
-	//	return "", err
-	//}
-	//signatureBase642 := base64.StdEncoding.EncodeToString(signature2)
-	//fmt.Println(signatureBase642)
-
 	sign := fmt.Sprintf(`%s appid="%s",serial_no="%s",timestamp="%d",nonce_str="%s",signature="%s"`, algorism, c.appid, c.serialNo, c.timestamp, nonceStr, signatureBase64)
 	return sign, nil
 }
@@ -124,7 +185,7 @@ func (c *Client) SignatureVerification(authorization, body string) bool {
 	return verifyMessage(message, publicKey, signature)
 }
 
-// 验签，成功返回请求body
+// VerifySign 验签，成功返回请求body
 func (c *Client) VerifySign(r *http.Request) (string, error) {
 	appid := r.Header.Get("Lklapi_Appid")
 	serialNo := r.Header.Get("Lklapi_Serial")
@@ -172,13 +233,6 @@ func verifyMessage(message string, publicKey *rsa.PublicKey, signature []byte) b
 func signMessage(message string, privateKey *rsa.PrivateKey) ([]byte, error) {
 	hashed := sha256.Sum256([]byte(message))
 	return rsa.SignPKCS1v15(nil, privateKey, crypto.SHA256, hashed[:])
-}
-
-func signMessage2(message string, privateKey *rsa.PrivateKey) ([]byte, error) {
-	hash := crypto.SHA256.New()
-	hash.Write([]byte(message))
-	hashed := hash.Sum(nil)
-	return rsa.SignPKCS1v15(randc.Reader, privateKey, crypto.SHA256, hashed)
 }
 
 // 加载私钥
@@ -245,7 +299,7 @@ func loadPublicKeyNew(path string) (*x509.Certificate, error) {
 	return certificate, nil
 }
 
-// ECB模式加密（PKCS5Padding）
+// EncryptECB ECB模式加密（PKCS5Padding）
 func EncryptECB(key, plaintext []byte) (string, error) {
 	// 检查密钥长度
 	key2, _ := base64.StdEncoding.DecodeString(string(key))
@@ -272,7 +326,7 @@ func EncryptECB(key, plaintext []byte) (string, error) {
 	return base64.StdEncoding.EncodeToString(ciphertext), nil
 }
 
-// PKCS5填充
+// PKCS5Padding PKCS5填充
 func PKCS5Padding(src []byte, blockSize int) []byte {
 	padding := blockSize - len(src)%blockSize
 	padtext := bytes.Repeat([]byte{byte(padding)}, padding)

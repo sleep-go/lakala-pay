@@ -1,13 +1,7 @@
 package api
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
 	"github.com/sleep-go/lakala-pay/model"
-	"github.com/sleep-go/lakala-pay/util"
-	"net/http"
-	"reflect"
 )
 
 const (
@@ -16,86 +10,6 @@ const (
 	orderCloseUrl    = "/api/v3/ccss/counter/order/close"
 	refundUrl        = "/api/v3/labs/relation/refund"
 )
-
-func hasField(i interface{}, fieldName string) bool {
-	v := reflect.ValueOf(i)
-	if v.Kind() == reflect.Ptr {
-		v = v.Elem()
-	}
-	if v.Kind() != reflect.Struct {
-		return false
-	}
-	return v.FieldByName(fieldName).IsValid()
-}
-
-func newBuffer[T any](req *T) *bytes.Buffer {
-	m := model.BaseReq[T]{
-		ReqTime: util.GetReqTime(),
-		Version: "3.0",
-		ReqData: req,
-	}
-	data, err := json.Marshal(m)
-	if hasField(req, "Ver") {
-		data, err = json.Marshal(req)
-	}
-	if err != nil {
-		return nil
-	}
-	return bytes.NewBuffer(data)
-}
-
-func newBufferEncrypt[T any](req *T) *bytes.Buffer {
-	m := model.BaseReq[T]{
-		ReqTime: util.GetReqTime(),
-		Version: "3.0",
-		ReqData: req,
-	}
-	data, err := json.Marshal(m)
-	if hasField(req, "Ver") {
-		data, err = json.Marshal(req)
-	}
-	if err != nil {
-		return nil
-	}
-	//fmt.Println("----------------")
-	//fmt.Println("param:", string(data))
-
-	key := model.KEY_TEST
-	src := data
-	endata, _ := EncryptECB([]byte(key), []byte(src))
-	data = []byte(endata)
-
-	return bytes.NewBuffer(data)
-}
-
-// doRequest 统一请求方法
-func doRequest[T any, D any](c *Client, url string, req *T, needEncrypt bool) (*D, error) {
-	var reqStr *bytes.Buffer
-	if needEncrypt {
-		reqStr = newBufferEncrypt[T](req)
-	} else {
-		reqStr = newBuffer[T](req)
-	}
-	fmt.Println("----------------")
-	fmt.Println("param:", reqStr.String())
-	auth, err := c.GetAuthorization(reqStr.Bytes())
-	if err != nil {
-		return nil, err
-	}
-	request, err := http.NewRequest(http.MethodPost, c.Host+url, reqStr)
-	if err != nil {
-		return nil, err
-	}
-
-	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("Accept", "application/json")
-	request.Header.Set("Authorization", auth)
-	resp, err := c.Http.Do(request)
-	if err != nil {
-		return nil, err
-	}
-	return util.ParseResp[D](resp)
-}
 
 // OrderSpecialCreate 收银台订单创建
 func (c *Client) OrderSpecialCreate(req *model.SpecialCreateReq) (*model.SpecialCreateRes, error) {
