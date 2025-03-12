@@ -81,7 +81,7 @@ func TestVerify(t *testing.T) {
 }
 
 func TestRefund(t *testing.T) {
-	OriginTradeNo := "2025031266200819110009"
+	OriginTradeNo := "2025031266200819110009" //订单查询查出来的
 	RefundOrderId := model.CreateOrderStr()
 	fmt.Println(RefundOrderId)
 	client := NewClient(model.APPID_TEST, model.SERIAL_NO_TEST, model.KEY_PATH_TEST, model.CERT_PATH_TEST, false, "")
