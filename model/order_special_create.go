@@ -102,6 +102,6 @@ type SpecialCreateResData struct {
 
 func CreateOrderStr() string {
 	rand.New(rand.NewSource(time.Now().UnixNano())) // 设置随机种子
-	//return fmt.Sprintf("%s%d%d", time.Now().Format("20060102150405"), rand.Intn(9999), rand.Intn(9999))
-	return fmt.Sprintf("%d%d%d", time.Now().Second(), rand.Intn(9999), rand.Intn(9999))
+	return fmt.Sprintf("%s%d%d", time.Now().Format("20060102150405"), rand.Intn(9999), rand.Intn(9999))
+	//return fmt.Sprintf("%d%d%d", time.Now().Second(), rand.Intn(9999), rand.Intn(9999))
 }

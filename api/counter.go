@@ -10,7 +10,8 @@ const (
 	specialCreateUrl = "/api/v3/ccss/counter/order/special_create"
 	orderQueryUrl    = "/api/v3/ccss/counter/order/query"
 	orderCloseUrl    = "/api/v3/ccss/counter/order/close"
-	refundUrl        = "/api/v3/labs/relation/refund"
+	refundUrl        = "/api/v3/lams/trade/trade_refund"
+	refundQueryUrl   = "/api/v3/lams/trade/trade_refund_query"
 )
 
 // OrderSpecialCreate 收银台订单创建
@@ -35,4 +36,14 @@ func (c *Client) OrderNotifyCallback(authorization, body string) (resp *model.Or
 	}
 	err = json.Unmarshal([]byte(body), &resp)
 	return resp, err
+}
+
+// OrderRefund 统一退货
+func (c *Client) OrderRefund(req *model.RefundRequest) (resp *model.RefundResponse, err error) {
+	return doRequest[model.RefundRequest, model.RefundResponse](c, refundUrl, req)
+}
+
+// RefundQuery 退货查询
+func (c *Client) RefundQuery(req *model.RefundQueryRequest) (resp *model.RefundQueryResponse, err error) {
+	return doRequest[model.RefundQueryRequest, model.RefundQueryResponse](c, refundQueryUrl, req)
 }
