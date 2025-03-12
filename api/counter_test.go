@@ -77,6 +77,7 @@ func TestRefund(t *testing.T) {
 	orderId := "2025031211192119167104"
 	//PayOrderNo := "25030311012001101011001738446"
 	//PayOrderNo = ""
+	RefundOrderId := model.CreateOrderStr()
 	client := NewClient(model.APPID_TEST, model.SERIAL_NO_TEST, model.KEY_PATH_TEST, model.CERT_PATH_TEST, false, "")
 	req := model.RefundRequest{
 		MerchantNo:      model.MERCHANT_NO_TEST,
@@ -85,6 +86,7 @@ func TestRefund(t *testing.T) {
 		RefundAmount:    "1",
 		OriginBizType:   "3",
 		OriginTradeDate: "20250312",
+		OriginTradeNo:   RefundOrderId, //必传，退款查询时有用
 	}
 	ret, err := client.OrderRefund(&req)
 	fmt.Println(ret)
