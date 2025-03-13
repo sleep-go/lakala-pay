@@ -131,3 +131,25 @@ func TestApplyLedgerReceiver(t *testing.T) {
 	fmt.Println(ret)
 	fmt.Println(err)
 }
+
+func TestQueryReceiverDetail(t *testing.T) {
+	orderId := model.CreateOrderStr()
+	client := NewClient(model.APPID_TEST, model.SERIAL_NO_TEST, model.KEY_PATH_TEST, model.CERT_PATH_TEST, false, "")
+	req := model.QueryReceiverDetailReqData{
+		Version:    "1.0",
+		OrderNo:    orderId,
+		OrgCode:    "1",
+		ReceiverNo: "12312",
+	}
+
+	applyReg := model.QueryReceiverDetailReq{
+		Ver:     "2.0",
+		ReqData: req,
+		ReqTime: fmt.Sprintf("%d", time.Now().Unix()),
+		ReqId:   fmt.Sprintf("%d", time.Now().UnixMicro()),
+	}
+
+	ret, err := client.queryReceiverDetail(&applyReg)
+	fmt.Println(ret)
+	fmt.Println(err)
+}

@@ -9,6 +9,7 @@ const (
 	applyUrl               = "/api/v2/mms/openApi/ledger/applyLedgerMer"
 	ledgerQueryUrl         = "/api/v2/mms/openApi/ledger/queryLedgerMer"
 	applyLedgerReceiverUrl = "/api/v2/mms/openApi/ledger/applyLedgerReceiver"
+	queryReceiverDetailUrl = "/api/v2/mms/openApi/ledger/queryReceiverDetail"
 )
 
 // 文件上传
@@ -29,4 +30,9 @@ func (c *Client) ledgerQuery(req *model.LedgerQueryReq) (*model.LedgerQueryRet, 
 // 分账接收方创建申请
 func (c *Client) applyLedgerReceiver(req *model.ApplyLedgerReceiverReq) (*model.ApplyLedgerReceiverRet, error) {
 	return doRequest[model.ApplyLedgerReceiverReq, model.ApplyLedgerReceiverRet](c, applyLedgerReceiverUrl, req)
+}
+
+// 分账接收方详情查询
+func (c *Client) queryReceiverDetail(req *model.QueryReceiverDetailReq) (*model.QueryReceiverDetailRet, error) {
+	return doRequest[model.QueryReceiverDetailReq, model.QueryReceiverDetailRet](c, queryReceiverDetailUrl, req)
 }

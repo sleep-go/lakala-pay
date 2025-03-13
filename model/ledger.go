@@ -198,3 +198,67 @@ type ApplyLedgerReceiverRet struct {
 		ReceiverNo string `json:"receiverNo"`
 	} `json:"respData"`
 }
+
+type QueryReceiverDetailReqData struct {
+	// 接口版本号
+	Version string `json:"version"`
+	// 订单编号（14位年月日时分秒+8位随机数）
+	OrderNo string `json:"orderNo"`
+	// 机构代码
+	OrgCode string `json:"orgCode"`
+	// 接收方编号
+	ReceiverNo string `json:"receiverNo"`
+}
+
+type QueryReceiverDetailReq struct {
+	Ver     string                     `json:"version"`
+	ReqTime string                     `json:"reqTime"`
+	ReqId   string                     `json:"reqId"`
+	ReqData QueryReceiverDetailReqData `json:"reqData"`
+}
+
+type QueryReceiverDetailRespData struct {
+	// 接收方编号
+	ReceiverNo string `json:"receiverNo"`
+	// 分账接收方名称
+	ReceiverName string `json:"receiverName"`
+	// 联系手机号
+	ContactMobile string `json:"contactMobile"`
+	// 营业执照号码
+	LicenseNo string `json:"licenseNo"`
+	// 营业执照名称
+	LicenseName string `json:"licenseName"`
+	// 法人姓名
+	LegalPersonName string `json:"legalPersonName"`
+	// 法人证件类型
+	// 17: 身份证, 18: 护照, 19: 港澳居民来往内地通行证, 20: 台湾居民来往内地通行证
+	LegalPersonCertificateType string `json:"legalPersonCertificateType"`
+	// 法人证件号
+	LegalPersonCertificateNo string `json:"legalPersonCertificateNo"`
+	// 收款账户卡号
+	AcctNo string `json:"acctNo"`
+	// 收款账户名称
+	AcctName string `json:"acctName"`
+	// 收款账户账户类型
+	// 57: 对公, 58: 对私
+	AcctTypeCode string `json:"acctTypeCode"`
+	// 收款账户证件类型
+	// 17: 身份证, 18: 护照, 19: 港澳居民来往内地通行证, 20: 台湾居民来往内地通行证
+	AcctCertificateType string `json:"acctCertificateType"`
+	// 收款账户证件号
+	AcctCertificateNo string `json:"acctCertificateNo"`
+	// 收款账户开户行号（仅支持对私结算账户）
+	AcctOpenBankCode string `json:"acctOpenBankCode"`
+	// 收款账户开户名称
+	AcctOpenBankName string `json:"acctOpenBankName"`
+	// 收款账户清算行行号（仅支持对私结算账户）
+	AcctClearBankCode string `json:"acctClearBankCode"`
+	// 创建方编号（开放平台创建传递，接收方拥有者）
+	OwnerNo string `json:"ownerNo"`
+}
+
+type QueryReceiverDetailRet struct {
+	Code     string                      `json:"retCode"`
+	Msg      string                      `json:"retMsg"`
+	RespData QueryReceiverDetailRespData `json:"respData"`
+}
