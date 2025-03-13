@@ -66,7 +66,7 @@ func TestApply(t *testing.T) {
 		ReqId:   fmt.Sprintf("%d", time.Now().UnixMicro()),
 	}
 
-	ret, err := client.apply(&applyReg)
+	ret, err := client.ledgerApply(&applyReg)
 	fmt.Println(ret)
 	fmt.Println(err)
 }
@@ -88,6 +88,46 @@ func TestLedgerQuery(t *testing.T) {
 	}
 
 	ret, err := client.ledgerQuery(&applyReg)
+	fmt.Println(ret)
+	fmt.Println(err)
+}
+
+func TestApplyLedgerReceiver(t *testing.T) {
+	orderId := model.CreateOrderStr()
+	client := NewClient(model.APPID_TEST, model.SERIAL_NO_TEST, model.KEY_PATH_TEST, model.CERT_PATH_TEST, false, "")
+
+	attach := model.Attach{
+		AttachType:      "BANK_CARD",
+		AttachName:      "银行卡",
+		AttachStorePath: "MMS/20250311/151221-e802075955e24dc6be1ba9c4109ef8f2.pdf",
+	}
+	attachList := []model.Attach{attach}
+	req := model.ApplyLedgerReceiverData{
+		Version:             "1.0",
+		OrderNo:             orderId,
+		OrgCode:             "1",
+		ReceiverName:        "高峰公棚",
+		ContactMobile:       "13263116556",
+		AcctNo:              "22",
+		AcctName:            "授权",
+		AcctTypeCode:        "58",
+		AcctCertificateType: "17",
+		AcctCertificateNo:   "23432",
+		AcctOpenBankCode:    "12312",
+		AcctOpenBankName:    "天津银行",
+		AcctClearBankCode:   "12312",
+		SettleType:          "01",
+		AttachList:          attachList,
+	}
+
+	applyReg := model.ApplyLedgerReceiverReq{
+		Ver:     "2.0",
+		ReqData: req,
+		ReqTime: fmt.Sprintf("%d", time.Now().Unix()),
+		ReqId:   fmt.Sprintf("%d", time.Now().UnixMicro()),
+	}
+
+	ret, err := client.applyLedgerReceiver(&applyReg)
 	fmt.Println(ret)
 	fmt.Println(err)
 }
