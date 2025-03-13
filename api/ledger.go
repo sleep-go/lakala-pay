@@ -5,9 +5,9 @@ import (
 )
 
 const (
-	uploadUrl = "/api/v2/mms/openApi/uploadFile"
-	applyUrl  = "/api/v2/mms/openApi/ledger/applyLedgerMer"
-	//queryUrl = "/api/v3/ipsdf/paid/query"
+	uploadUrl      = "/api/v2/mms/openApi/uploadFile"
+	applyUrl       = "/api/v2/mms/openApi/ledger/applyLedgerMer"
+	ledgerQueryUrl = "/api/v2/mms/openApi/ledger/queryLedgerMer"
 )
 
 // 商户分账业务开通申请
@@ -17,4 +17,8 @@ func (c *Client) apply(req *model.ApplyReq) (*model.ApplyRet, error) {
 
 func (c *Client) upload(req *model.UploadReq) (*model.UploadRet, error) {
 	return doRequest[model.UploadReq, model.UploadRet](c, uploadUrl, req)
+}
+
+func (c *Client) ledgerQuery(req *model.LedgerQueryReq) (*model.LedgerQueryRet, error) {
+	return doRequest[model.LedgerQueryReq, model.LedgerQueryRet](c, ledgerQueryUrl, req)
 }
