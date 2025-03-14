@@ -71,6 +71,33 @@ func TestApply(t *testing.T) {
 	fmt.Println(err)
 }
 
+func TestModifyLedgerMer(t *testing.T) {
+	orderId := model.CreateOrderStr()
+	client := NewClient(model.APPID_TEST, model.SERIAL_NO_TEST, model.KEY_PATH_TEST, model.CERT_PATH_TEST, false, "")
+	req := model.ModifyLedgerMerData{
+		Version:              "1.0",
+		OrderNo:              orderId,
+		OrgCode:              "1",
+		MerInnerNo:           "822290059430BFE",
+		ContactMobile:        "13263116556",
+		SplitLowestRatio:     "1.01",
+		SplitEntrustFileName: "授权委托书.pdf",
+		SplitEntrustFilePath: "MMS/20250311/151221-e802075955e24dc6be1ba9c4109ef8f2.pdf",
+		SplitRange:           "MARK",
+		RetUrl:               "http://sss.ss.s",
+	}
+	applyReg := model.ModifyLedgerMerReq{
+		Ver:     "2.0",
+		ReqData: req,
+		ReqTime: fmt.Sprintf("%d", time.Now().Unix()),
+		ReqId:   fmt.Sprintf("%d", time.Now().UnixMicro()),
+	}
+
+	ret, err := client.modifyLedgerMer(&applyReg)
+	fmt.Println(ret)
+	fmt.Println(err)
+}
+
 func TestLedgerQuery(t *testing.T) {
 	orderId := model.CreateOrderStr()
 	client := NewClient(model.APPID_TEST, model.SERIAL_NO_TEST, model.KEY_PATH_TEST, model.CERT_PATH_TEST, false, "")
@@ -132,14 +159,53 @@ func TestApplyLedgerReceiver(t *testing.T) {
 	fmt.Println(err)
 }
 
+func TestModifyLedgerReceiver(t *testing.T) {
+	orderId := model.CreateOrderStr()
+	ReceiverNo := "123312" //applyLedgerReceiver 接口返回的
+	client := NewClient(model.APPID_TEST, model.SERIAL_NO_TEST, model.KEY_PATH_TEST, model.CERT_PATH_TEST, false, "")
+
+	attach := model.Attach{
+		AttachType:      "BANK_CARD",
+		AttachName:      "银行卡",
+		AttachStorePath: "MMS/20250311/151221-e802075955e24dc6be1ba9c4109ef8f2.pdf",
+	}
+	attachList := []model.Attach{attach}
+	req := model.ModifyLedgerReceiverData{
+		Version:           "1.0",
+		OrderNo:           orderId,
+		OrgCode:           "1",
+		ReceiverName:      "高峰公棚",
+		ContactMobile:     "13263116556",
+		AcctNo:            "22",
+		AcctTypeCode:      "58",
+		AcctOpenBankCode:  "12312",
+		AcctOpenBankName:  "天津银行",
+		AcctClearBankCode: "12312",
+		AttachList:        attachList,
+		ReceiverNo:        ReceiverNo,
+	}
+
+	applyReg := model.ModifyLedgerReceiverReq{
+		Ver:     "2.0",
+		ReqData: req,
+		ReqTime: fmt.Sprintf("%d", time.Now().Unix()),
+		ReqId:   fmt.Sprintf("%d", time.Now().UnixMicro()),
+	}
+
+	ret, err := client.modifyLedgerReceiver(&applyReg)
+	fmt.Println(ret)
+	fmt.Println(err)
+}
+
 func TestQueryReceiverDetail(t *testing.T) {
 	orderId := model.CreateOrderStr()
+	ReceiverNo := "123312" //applyLedgerReceiver 接口返回的
 	client := NewClient(model.APPID_TEST, model.SERIAL_NO_TEST, model.KEY_PATH_TEST, model.CERT_PATH_TEST, false, "")
 	req := model.QueryReceiverDetailReqData{
 		Version:    "1.0",
 		OrderNo:    orderId,
 		OrgCode:    "1",
-		ReceiverNo: "12312",
+		ReceiverNo: ReceiverNo,
 	}
 
 	applyReg := model.QueryReceiverDetailReq{
@@ -150,6 +216,37 @@ func TestQueryReceiverDetail(t *testing.T) {
 	}
 
 	ret, err := client.queryReceiverDetail(&applyReg)
+	fmt.Println(ret)
+	fmt.Println(err)
+	if err == nil {
+		fmt.Println(ret.RespData.ReceiverNo) //绑定申请要用到
+	}
+}
+
+func TestApplyBind(t *testing.T) {
+	orderId := model.CreateOrderStr()
+	ReceiverNo := "123312" //applyLedgerReceiver 接口返回的
+	client := NewClient(model.APPID_TEST, model.SERIAL_NO_TEST, model.KEY_PATH_TEST, model.CERT_PATH_TEST, false, "")
+	req := model.ApplyBindData{
+		Version:    "1.0",
+		OrderNo:    orderId, // 示例订单编号，需要符合格式要求
+		OrgCode:    "1",
+		MerInnerNo: model.MERCHANT_NO_TEST, // 或者填写MerCupNo字段
+		// MerCupNo:    "exampleMerCupNo",       // 与MerInnerNo选传其一
+		ReceiverNo:      ReceiverNo,
+		EntrustFileName: "cooperation_agreement.pdf",
+		EntrustFilePath: "/path/to/uploaded/file", // 调用进件附件上传接口获取到的路径
+		RetUrl:          "http://example.com/callback",
+	}
+
+	applyReg := model.ApplyBindReq{
+		Ver:     "2.0",
+		ReqData: req,
+		ReqTime: fmt.Sprintf("%d", time.Now().Unix()),
+		ReqId:   fmt.Sprintf("%d", time.Now().UnixMicro()),
+	}
+
+	ret, err := client.applyBind(&applyReg)
 	fmt.Println(ret)
 	fmt.Println(err)
 }

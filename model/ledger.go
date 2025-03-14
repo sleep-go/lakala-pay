@@ -60,6 +60,78 @@ type ApplyRet struct {
 	} `json:"respData"`
 }
 
+type ModifyLedgerMerReq struct {
+	Ver     string              `json:"version"`
+	ReqTime string              `json:"reqTime"`
+	ReqId   string              `json:"reqId"`
+	ReqData ModifyLedgerMerData `json:"reqData"`
+}
+
+type ModifyLedgerMerData struct {
+	// 接口版本号，必传字段，长度为8，固定取值"1.0"
+	Version string `json:"version" validate:"required,eq=1.0,max=8"`
+
+	// 订单编号，必传字段，长度为32，格式为14位年月日时（24小时制）分秒+8位的随机数（不重复）
+	// 例如："2021020112000012345678"
+	OrderNo string `json:"orderNo" validate:"required,max=32,regexp=\\d{14}\\d{8}$"`
+
+	// 机构代码，必传字段，长度为32
+	OrgCode string `json:"orgCode" validate:"required,max=32"`
+
+	// 拉卡拉内部商户号，可选字段，长度为32
+	// 与银联商户号（MerCupNo）互斥，如果两者都传，则以内部商户号为准
+	MerInnerNo string `json:"merInnerNo,omitempty" validate:"max=32"`
+
+	// 银联商户号，可选字段，长度为32
+	// 与拉卡拉内部商户号（MerInnerNo）互斥，如果两者都传，则以内部商户号为准
+	MerCupNo string `json:"merCupNo,omitempty" validate:"max=32"`
+
+	// 联系手机号，可选字段，长度为32
+	ContactMobile string `json:"contactMobile,omitempty" validate:"max=32"`
+
+	// 最低分账比例（百分比），可选字段，长度为32，支持2位精度
+	// 例如："70" 或 "70.50"
+	SplitLowestRatio string `json:"splitLowestRatio,omitempty" validate:"max=32,regexp=\\d+(\\.\\d{1,2})?$"`
+
+	// 分账结算委托书文件名称，可选字段，长度为64
+	// 当需要变更比例时必须传，格式为"分账结算委托书文件名称.pdf"
+	SplitEntrustFileName string `json:"splitEntrustFileName,omitempty" validate:"max=64"`
+
+	// 分账结算委托书文件路径，可选字段，长度为64
+	// 当需要变更比例时必须传，调用商户入网接口上传附件后反馈的文件路径
+	SplitEntrustFilePath string `json:"splitEntrustFilePath,omitempty" validate:"max=64"`
+
+	// 分账范围，非必传字段，长度为32
+	// 取值："ALL"（商户全量交易自动分账处理）或 "MARK"（按交易请求分账标识进行分账处理）
+	SplitRange string `json:"splitRange,omitempty" validate:"max=32,oneof=ALL MARK"`
+
+	// 分账规则来源，非必传字段，长度为32
+	// 取值："MER"（商户分账规则）或 "PLATFORM"（平台分账规则）
+	SplitRuleSource string `json:"splitRuleSource,omitempty" validate:"max=32,oneof=MER PLATFORM"`
+
+	// 回调通知地址，必传字段，长度为128
+	// 审核通过后通知的地址
+	RetUrl string `json:"retUrl" validate:"required,max=128"`
+
+	// 电子合同编号，非必传字段，长度为32
+	// 如果已经签署过电子合同，此处上送电子合同编号，供审核人员复核使用
+	EleContractNo string `json:"eleContractNo,omitempty" validate:"max=32"`
+
+	// 附加资料，可选字段，为附加资料文件信息的集合
+	Attachments []Attach `json:"attachments,omitempty"`
+}
+
+type ModifyLedgerMerRet struct {
+	Code     string `json:"retCode"`
+	Msg      string `json:"retMsg"`
+	RespData struct {
+		Version string `json:"version"` // 接口版本号（示例值：547110502170558464）‌
+		OrderNo string `json:"orderNo"` // 订单编号（示例值：2021020112000012345678）‌
+		OrgCode string `json:"orgCode"` // 机构代码（示例值：200669）‌
+		ApplyId int64  `json:"applyId"` // 受理编号（长整型数字，示例：548099616395186176）‌
+	} `json:"respData"`
+}
+
 type LedgerQueryData struct {
 	Version    string `json:"version"`              // 接口版本号 1.0
 	OrderNo    string `json:"orderNo"`              // 订单编号，14位年月日时（24小时制）分秒+8位的随机数（不重复）如：2021020112000012345678
@@ -199,6 +271,62 @@ type ApplyLedgerReceiverRet struct {
 	} `json:"respData"`
 }
 
+type ModifyLedgerReceiverReq struct {
+	Ver     string                   `json:"version"`
+	ReqTime string                   `json:"reqTime"`
+	ReqId   string                   `json:"reqId"`
+	ReqData ModifyLedgerReceiverData `json:"reqData"`
+}
+
+type ModifyLedgerReceiverData struct {
+	// 接口版本号，必传字段，长度为8，固定取值"1.0"
+	Version string `json:"version" validate:"required,eq=1.0,max=8"`
+	// 订单编号，必传字段，长度为32，格式为14位年月日时（24小时制）分秒+8位的随机数（不重复）
+	// 例如："2021020112000012345678"
+	OrderNo string `json:"orderNo" validate:"required,max=32,regexp=\\d{14}\\d{8}$"`
+	// 分账接收方所属机构代码，必传字段，长度为32
+	OrgCode string `json:"orgCode" validate:"required,max=32"`
+	// 分账接收方编号，必传字段，长度为32
+	ReceiverNo string `json:"receiverNo" validate:"required,max=32"`
+	// 分账接收方名称，可选字段，长度为64
+	ReceiverName string `json:"receiverName,omitempty" validate:"max=64"`
+	// 联系手机号，可选字段，长度为16
+	ContactMobile string `json:"contactMobile,omitempty" validate:"max=16"`
+	// 收款账户卡号，可选字段，长度为32
+	AcctNo string `json:"acctNo,omitempty" validate:"max=32"`
+	// 收款账户账户类型，可选字段，长度为32，57：对公 58：对私
+	AcctTypeCode string `json:"acctTypeCode,omitempty" `
+	// 收款账户开户行号，可选字段，长度为32
+	AcctOpenBankCode string `json:"acctOpenBankCode,omitempty" validate:"max=32"`
+	// 收款账户开户名称，可选字段，长度为64
+	AcctOpenBankName string `json:"acctOpenBankName,omitempty" validate:"max=64"`
+	// 收款账户清算行行号，可选字段，长度为32
+	AcctClearBankCode string `json:"acctClearBankCode,omitempty" validate:"max=32"`
+	// 附件资料集合，可传字段
+	AttachList []Attach `json:"attachList,omitempty"`
+	// 接收方状态，可传字段，长度为32，有效：VALID，无效：INVALID
+	Status string `json:"status,omitempty" validate:"max=32"`
+}
+
+type ModifyLedgerReceiverRet struct {
+	Code     string `json:"retCode"`
+	Msg      string `json:"retMsg"`
+	RespData struct {
+		// 接口版本号（回传）
+		Version string `json:"version"`
+		// 订单编号（回传）
+		OrderNo string `json:"orderNo"`
+		// 申请机构代码（回传）
+		OrgCode string `json:"orgCode"`
+		// 接收方所属机构ID
+		OrgId string `json:"orgId"`
+		// 接收方所属机构名称
+		OrgName string `json:"orgName"`
+		// 接收方编号
+		ReceiverNo string `json:"receiverNo"`
+	} `json:"respData"`
+}
+
 type QueryReceiverDetailReqData struct {
 	// 接口版本号
 	Version string `json:"version"`
@@ -261,4 +389,49 @@ type QueryReceiverDetailRet struct {
 	Code     string                      `json:"retCode"`
 	Msg      string                      `json:"retMsg"`
 	RespData QueryReceiverDetailRespData `json:"respData"`
+}
+
+type ApplyBindReq struct {
+	Ver     string        `json:"version"`
+	ReqTime string        `json:"reqTime"`
+	ReqId   string        `json:"reqId"`
+	ReqData ApplyBindData `json:"reqData"`
+}
+
+type ApplyBindData struct {
+	// 接口版本号
+	Version string `json:"version"`
+	// 订单编号（14位年月日时分秒+8位随机数）
+	OrderNo string `json:"orderNo"`
+	// 分账接收方所属机构代码
+	OrgCode string `json:"orgCode"`
+	// 分账商户内部商户号（与MerCupNo选传其一，不能都为空）
+	MerInnerNo string `json:"merInnerNo"`
+	// 分账商户银联商户号（与MerInnerNo选传其一，不能都为空）
+	MerCupNo string `json:"merCupNo"`
+	// 分账接收方编号
+	ReceiverNo string `json:"receiverNo"`
+	// 合作协议附件名称
+	EntrustFileName string `json:"entrustFileName"`
+	// 合作协议附件路径（调用进件附件上传接口获取到附件路径）
+	EntrustFilePath string `json:"entrustFilePath"`
+	// 回调通知地址（审核通过后通知的地址）
+	RetUrl string `json:"retUrl"`
+}
+
+type ApplyBindRet struct {
+	Code     string `json:"retCode"`
+	Msg      string `json:"retMsg"`
+	RespData struct {
+		// 接口版本号（注意：这里的类型应该是根据实际的接口文档来确定的，
+		// 如果接口文档确实指定为String类型且给出了这样的取值，则保留为String，
+		// 但通常版本号可能是int或float类型，这里的类型选择应基于实际接口规范）
+		Version string `json:"version"`
+		// 订单编号
+		OrderNo string `json:"orderNo"`
+		// 机构代码
+		OrgCode string `json:"orgCode"`
+		// 受理编号
+		ApplyId int64 `json:"applyId"`
+	} `json:"respData"`
 }
