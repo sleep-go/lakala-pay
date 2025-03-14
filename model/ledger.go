@@ -488,3 +488,49 @@ type ApplyBindRet struct {
 		ApplyId int64 `json:"applyId"`
 	} `json:"respData"`
 }
+
+type ApplyUnBindReq struct {
+	Ver     string          `json:"version"`
+	ReqTime string          `json:"reqTime"`
+	ReqId   string          `json:"reqId"`
+	ReqData ApplyUnBindData `json:"reqData"`
+}
+
+type ApplyUnBindData struct {
+	// 接口版本号，固定为"1.0"
+	Version string `json:"version" validate:"required,eq=1.0"`
+	// 订单编号，14位时间+8位随机数
+	OrderNo string `json:"orderNo" validate:"required"` // 验证逻辑在业务层
+	// 分账接收方所属机构代码
+	OrgCode string `json:"orgCode" validate:"required"`
+	// 分账商户内部商户号或银联商户号（二选一）
+	MerInnerNo string `json:"merInnerNo" validate:"omitempty,max=32"` // 验证逻辑在业务层处理二选一
+	MerCupNo   string `json:"merCupNo" validate:"omitempty,max=32"`   // 同上
+	// 分账接收方编号
+	ReceiverNo string `json:"receiverNo" validate:"required"`
+	// 解除分账说明附件名称
+	EntrustFileName string `json:"entrustFileName" validate:"required"`
+	// 解除分账说明附件路径
+	EntrustFilePath string `json:"entrustFilePath" validate:"required"`
+	// 备注说明
+	Remark string `json:"remark" validate:"max=128"`
+	// 回调通知地址
+	RetUrl string `json:"retUrl" validate:"required"`
+}
+
+type ApplyUnBindRet struct {
+	Code     string `json:"retCode"`
+	Msg      string `json:"retMsg"`
+	RespData struct {
+		// 接口版本号（注意：这里的类型应该是根据实际的接口文档来确定的，
+		// 如果接口文档确实指定为String类型且给出了这样的取值，则保留为String，
+		// 但通常版本号可能是int或float类型，这里的类型选择应基于实际接口规范）
+		Version string `json:"version"`
+		// 订单编号
+		OrderNo string `json:"orderNo"`
+		// 机构代码
+		OrgCode string `json:"orgCode"`
+		// 受理编号
+		ApplyId int64 `json:"applyId"`
+	} `json:"respData"`
+}

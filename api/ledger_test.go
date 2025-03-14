@@ -268,3 +268,31 @@ func TestApplyBind(t *testing.T) {
 	fmt.Println(ret)
 	fmt.Println(err)
 }
+
+func TestApplyUnBind(t *testing.T) {
+	orderId := model.CreateOrderStr()
+	ReceiverNo := "123312" //applyLedgerReceiver 接口返回的
+	client := NewClient(model.APPID_TEST, model.SERIAL_NO_TEST, model.KEY_PATH_TEST, model.CERT_PATH_TEST, false, "")
+	req := model.ApplyUnBindData{
+		Version:    "1.0",
+		OrderNo:    orderId, // 示例订单编号，需要符合格式要求
+		OrgCode:    "1",
+		MerInnerNo: model.MERCHANT_NO_TEST, // 或者填写MerCupNo字段
+		// MerCupNo:    "exampleMerCupNo",       // 与MerInnerNo选传其一
+		ReceiverNo:      ReceiverNo,
+		EntrustFileName: "cooperation_agreement.pdf",
+		EntrustFilePath: "/path/to/uploaded/file", // 调用进件附件上传接口获取到的路径
+		RetUrl:          "http://example.com/callback",
+	}
+
+	applyReg := model.ApplyUnBindReq{
+		Ver:     "2.0",
+		ReqData: req,
+		ReqTime: fmt.Sprintf("%d", time.Now().Unix()),
+		ReqId:   fmt.Sprintf("%d", time.Now().UnixMicro()),
+	}
+
+	ret, err := client.applyUnBind(&applyReg)
+	fmt.Println(ret)
+	fmt.Println(err)
+}

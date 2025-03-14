@@ -14,6 +14,7 @@ const (
 	modifyLedgerReceiverUrl = "/api/v2/mms/openApi/ledger/modifyLedgerReceiver"
 	queryReceiverDetailUrl  = "/api/v2/mms/openApi/ledger/queryReceiverDetail"
 	applyBindUrl            = "/api/v2/mms/openApi/ledger/applyBind"
+	applyUnBindUrl          = "/api/v2/mms/openApi/ledger/applyUnBind"
 )
 
 // 文件上传
@@ -59,4 +60,9 @@ func (c *Client) queryReceiverDetail(req *model.QueryReceiverDetailReq) (*model.
 // 分账关系绑定申请
 func (c *Client) applyBind(req *model.ApplyBindReq) (*model.ApplyBindRet, error) {
 	return doRequest[model.ApplyBindReq, model.ApplyBindRet](c, applyBindUrl, req)
+}
+
+// 分账关系解绑申请
+func (c *Client) applyUnBind(req *model.ApplyUnBindReq) (*model.ApplyUnBindRet, error) {
+	return doRequest[model.ApplyUnBindReq, model.ApplyUnBindRet](c, applyUnBindUrl, req)
 }
