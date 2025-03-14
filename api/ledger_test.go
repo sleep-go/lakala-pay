@@ -41,6 +41,24 @@ func TestUpload(t *testing.T) {
 	fmt.Println(err)
 }
 
+func TestCardBin(t *testing.T) {
+	orderId := model.CreateOrderStr()
+	CardNo := "6217681406150014"
+	client := NewClient(model.APPID_TEST, model.SERIAL_NO_TEST, model.KEY_PATH_TEST, model.CERT_PATH_TEST, false, "")
+	req := model.CardBinReqData{
+		Version: "1.0", OrderNo: orderId, OrgCode: "1", CardNo: CardNo,
+	}
+	upReg := model.CardBinReq{
+		Ver:     "1.0.0",
+		ReqData: req,
+		ReqTime: fmt.Sprintf("%d", time.Now().Unix()),
+		ReqId:   fmt.Sprintf("%d", time.Now().UnixMicro()),
+	}
+	ret, err := client.cardBin(&upReg)
+	fmt.Println(ret)
+	fmt.Println(err)
+}
+
 func TestApply(t *testing.T) {
 	orderId := model.CreateOrderStr()
 	client := NewClient(model.APPID_TEST, model.SERIAL_NO_TEST, model.KEY_PATH_TEST, model.CERT_PATH_TEST, false, "")

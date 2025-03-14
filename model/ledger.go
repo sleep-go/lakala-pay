@@ -17,10 +17,63 @@ type UploadReqData struct {
 }
 
 type UploadRet struct {
-	OrgCode   string `json:"orgCode" validate:"required"`   // 合作机构唯一标识码，需向平台申请获取（示例：ORG_2024）
-	OrderNo   string `json:"orderNo" validate:"required"`   // 业务订单编号，格式：14位年月日时分秒+8位随机数（示例：202403110930001234）
-	AttFileId string `json:"attFileId" validate:"required"` // 附件唯一标识符，由文件服务生成（示例：ATT_20240311_123456）‌
-	AttType   string `json:"attType" validate:"required"`   // 附件类型枚举值：ID_CARD_FRONT-身份证正面，INVOICE-发票，CONTRACT-合同‌
+	Code     string `json:"retCode"`
+	Msg      string `json:"retMsg"`
+	RespData struct {
+		OrgCode   string `json:"orgCode" validate:"required"`   // 合作机构唯一标识码，需向平台申请获取（示例：ORG_2024）
+		OrderNo   string `json:"orderNo" validate:"required"`   // 业务订单编号，格式：14位年月日时分秒+8位随机数（示例：202403110930001234）
+		AttFileId string `json:"attFileId" validate:"required"` // 附件唯一标识符，由文件服务生成（示例：ATT_20240311_123456）‌
+		AttType   string `json:"attType" validate:"required"`   // 附件类型枚举值：ID_CARD_FRONT-身份证正面，INVOICE-发票，CONTRACT-合同‌
+	} `json:"respData"`
+}
+
+type CardBinReq struct {
+	Ver     string         `json:"ver"`
+	ReqTime string         `json:"timestamp"`
+	ReqId   string         `json:"reqId"`
+	ReqData CardBinReqData `json:"reqData"`
+}
+
+type CardBinReqData struct {
+	// 接口版本号，必传字段，固定为"1.0"，长度为8
+	Version string `json:"version" validate:"required,eq=1.0,max=8"`
+
+	// 订单编号，必传字段，由14位时间（年月日时分秒）和8位随机数组成，总长度为32
+	// 示例值："2021020112000012345678"
+	// 注意：这里未直接在结构体中做格式校验，因为需要自定义逻辑来生成或验证该格式
+	OrderNo string `json:"orderNo" validate:"required,max=32"`
+
+	// 机构代码，必传字段，长度为32
+	OrgCode string `json:"orgCode" validate:"required,max=32"`
+
+	// 银行卡号，必传字段，长度为32（通常银行卡号长度为16-19位，但此处按给定长度32处理）
+	// 注意：实际业务中，银行卡号可能需要进行加密或脱敏处理，这里仅作示例
+	CardNo string `json:"cardNo" validate:"required,max=32"`
+}
+
+type CardBinRet struct {
+	Code     string `json:"retCode"`
+	Msg      string `json:"retMsg"`
+	RespData struct {
+		// 机构代码
+		OrgCode string `json:"orgCode"`
+		// 订单号
+		OrderNo string `json:"orderNo"`
+		// 银行卡号（在实际应用中，出于安全考虑，银行卡号可能会进行部分隐藏或加密处理）
+		CardNo string `json:"cardNo"`
+		// 卡bin（银行卡号的前几位，用于标识发卡银行和卡类型）
+		CardBin string `json:"cardBin"`
+		// 开户行号
+		BankCode string `json:"bankCode"`
+		// 清算行号
+		ClearingBankCode string `json:"clearingBankCode"`
+		// 开户行名称
+		BankName string `json:"bankName"`
+		// 银行卡类别（如：借记卡、信用卡等）
+		CardType string `json:"cardType"`
+		// 卡种名称（如：金卡、普卡、白金卡等）
+		CardName string `json:"cardName"`
+	} `json:"respData"`
 }
 
 type ApplyReq struct {

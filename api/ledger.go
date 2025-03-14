@@ -6,6 +6,7 @@ import (
 
 const (
 	uploadUrl               = "/api/v2/mms/openApi/uploadFile"
+	cardBinUrl              = "/api/v2/mms/openApi/cardBin"
 	applyUrl                = "/api/v2/mms/openApi/ledger/applyLedgerMer"
 	modifyLedgerMerUrl      = "/api/v2/mms/openApi/ledger/modifyLedgerMer"
 	ledgerQueryUrl          = "/api/v2/mms/openApi/ledger/queryLedgerMer"
@@ -18,6 +19,11 @@ const (
 // 文件上传
 func (c *Client) upload(req *model.UploadReq) (*model.UploadRet, error) {
 	return doRequest[model.UploadReq, model.UploadRet](c, uploadUrl, req)
+}
+
+// 卡BIN信息查询，仅支持对私结算账户
+func (c *Client) cardBin(req *model.CardBinReq) (*model.CardBinRet, error) {
+	return doRequest[model.CardBinReq, model.CardBinRet](c, cardBinUrl, req)
 }
 
 // 商户分账业务开通申请
