@@ -534,3 +534,58 @@ type ApplyUnBindRet struct {
 		ApplyId int64 `json:"applyId"`
 	} `json:"respData"`
 }
+
+type BalanceQueryReq struct {
+	Ver     string           `json:"ver"`
+	ReqTime string           `json:"reqTime"`
+	ReqId   string           `json:"reqId"`
+	ReqData BalanceQueryData `json:"reqData"`
+}
+
+type BalanceQueryData struct {
+	// bmcp机构号，必填，最大长度32
+	OrgNo string `json:"orgNo"`
+
+	// 商户号、接收方编号（二选一或同时填写），必填，最大长度32
+	// 商户号 或 receiveNo 或 商户用户编号
+	MerchantNo string `json:"merchantNo"`
+
+	// 账号（若提供，则payType无效），非必填，最大长度32
+	PayNo string `json:"payNo,omitempty"`
+
+	// 账号类型（若payNo未提供，则可能使用），非必填，默认01，最大长度32
+	//账号类型（01：收款账户，02：付款账户，03：分账商户账户，04：分账接收方账户，05：充值代付账户，06：结算代付账户）- 未上送则默认为01
+	PayType string `json:"payType,omitempty"` // 默认值为"01"（收款账户）
+
+	// 账户标志（未提供则默认为01），非必填，最大长度32（待上线功能）
+	// 账户标志（01:一般户 03:子虚户）- 未上送则默认为01
+	MgtFlag string `json:"mgtFlag,omitempty"`
+}
+
+type BalanceQueryRet struct {
+	// 账号
+	PayNo string `json:"payNo"`
+
+	// 账户类型
+	PayType string `json:"payType"`
+
+	// 账户状态
+	// CLOSE: 销户
+	// NORMAL: 正常
+	// FREEZE: 冻结
+	// STOPPAY: 止付
+	AcctSt string `json:"acctSt"`
+
+	// 预付余额（单位：元）
+	ForceBalance float64 `json:"forceBalance"`
+
+	// 上日余额（单位：元）–该字段已废弃使用
+	// 注意：虽然此字段已废弃，但仍需保留以兼容旧系统或数据记录
+	HisBalance float64 `json:"hisBalance"`
+
+	// 实时余额（单位：元）
+	ReBalance float64 `json:"reBalance"`
+
+	// 当前可用余额（单位：元）
+	CurBalance float64 `json:"curBalance"`
+}

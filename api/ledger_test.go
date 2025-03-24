@@ -296,3 +296,22 @@ func TestApplyUnBind(t *testing.T) {
 	fmt.Println(ret)
 	fmt.Println(err)
 }
+
+func TestBalanceQuery(t *testing.T) {
+	client := NewClient(model.APPID_TEST, model.SERIAL_NO_TEST, model.KEY_PATH_TEST, model.CERT_PATH_TEST, false, "")
+	req := model.BalanceQueryData{
+		MerchantNo: model.MERCHANT_NO_TEST,
+		OrgNo:      "1",
+	}
+
+	applyReg := model.BalanceQueryReq{
+		Ver:     "1.0.0",
+		ReqData: req,
+		ReqTime: fmt.Sprintf("%d", time.Now().Unix()),
+		ReqId:   fmt.Sprintf("%d", time.Now().UnixMicro()),
+	}
+
+	ret, err := client.balanceQuery(&applyReg)
+	fmt.Println(ret)
+	fmt.Println(err)
+}

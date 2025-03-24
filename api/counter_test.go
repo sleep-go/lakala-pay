@@ -32,8 +32,8 @@ func TestCreate(t *testing.T) {
 }
 
 func TestQuery(t *testing.T) {
-	orderId := "202503121452037062272"
-	PayOrderNo := "25031211012001101011001747089"
+	orderId := "2025032011163952599437"
+	PayOrderNo := "25032011012001101011001753921"
 	//PayOrderNo = ""
 	////orderId = ""
 	ChannelID := ""
@@ -81,7 +81,7 @@ func TestVerify(t *testing.T) {
 }
 
 func TestRefund(t *testing.T) {
-	OriginTradeNo := "2025031266200819110009" //订单查询查出来的
+	OriginTradeNo := "2025032066200819200545" //订单查询查出来的
 	RefundOrderId := model.CreateOrderStr()
 	fmt.Println(RefundOrderId)
 	client := NewClient(model.APPID_TEST, model.SERIAL_NO_TEST, model.KEY_PATH_TEST, model.CERT_PATH_TEST, false, "")
@@ -102,19 +102,22 @@ func TestRefund(t *testing.T) {
 
 func TestRefundQuery(t *testing.T) {
 	RefundQueryOrderId := model.CreateOrderStr()
-	OriginTradeNo := "2025031266200819110009"
+	OriginTradeNo := "2025032066200819200545"
 	fmt.Println(RefundQueryOrderId)
 	client := NewClient(model.APPID_TEST, model.SERIAL_NO_TEST, model.KEY_PATH_TEST, model.CERT_PATH_TEST, false, "")
 	req := model.RefundQueryRequest{
-		MerchantNo:      model.MERCHANT_NO_TEST,
-		TermNo:          "D9296381", //model.TERM_NO_TEST,
-		OutTradeNo:      RefundQueryOrderId,
-		OriginBizType:   "3",
-		OriginTradeDate: "20250312",
-		//OriginTradeRefNo: "66200819101562",
-		OriginTradeNo: OriginTradeNo,
+		MerchantNo:       model.MERCHANT_NO_TEST,
+		TermNo:           "D9296381", //model.TERM_NO_TEST,
+		OutTradeNo:       RefundQueryOrderId,
+		OriginBizType:    "3",
+		OriginTradeDate:  "20250312",
+		OriginTradeRefNo: "66100819200549",
+		OriginTradeNo:    OriginTradeNo,
+		//OriginOutTradeNo: "2025032011200815491594",
 	}
 	ret, err := client.RefundQuery(&req)
 	fmt.Println(ret)
 	fmt.Println(err)
+	fmt.Println(ret.ResData.RefundList[0].PayerAmount)
+	fmt.Println(ret.ResData.RefundList[0].RefundAmount)
 }
