@@ -315,3 +315,23 @@ func TestBalanceQuery(t *testing.T) {
 	fmt.Println(ret)
 	fmt.Println(err)
 }
+
+func TestBalanceSeparate(t *testing.T) {
+	client := NewClient(model.APPID_TEST, model.SERIAL_NO_TEST, model.KEY_PATH_TEST, model.CERT_PATH_TEST, false, "")
+	orderId := model.CreateOrderStr()
+	req := model.BalanceSeparateReq{
+		MerchantNo:    model.MERCHANT_NO_TEST,
+		OutSeparateNo: orderId,
+		TotalAmt:      "100",
+	}
+	applyReg := model.RecvData{
+		RecvMerchantNo: model.MERCHANT_NO_TEST,
+		RecvNo:         "1",
+		SeparateValue:  "10",
+	}
+	req.RecvDatas = append(req.RecvDatas, applyReg)
+
+	ret, err := client.balanceSeparate(&req)
+	fmt.Println(ret)
+	fmt.Println(err)
+}

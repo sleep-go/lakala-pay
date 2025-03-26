@@ -16,6 +16,7 @@ const (
 	applyBindUrl            = "/api/v2/mms/openApi/ledger/applyBind"
 	applyUnBindUrl          = "/api/v2/mms/openApi/ledger/applyUnBind"
 	balanceQueryUrl         = "/api/v2/laep/industry/ewalletBalanceQuery"
+	balanceSeparateUrl      = "/api/v3/sacs/balanceSeparate"
 )
 
 // 文件上传
@@ -71,4 +72,9 @@ func (c *Client) applyUnBind(req *model.ApplyUnBindReq) (*model.ApplyUnBindRet, 
 // 账户余额查询
 func (c *Client) balanceQuery(req *model.BalanceQueryReq) (*model.BalanceQueryRet, error) {
 	return doRequest[model.BalanceQueryReq, model.BalanceQueryRet](c, balanceQueryUrl, req)
+}
+
+// 账户余额查询
+func (c *Client) balanceSeparate(req *model.BalanceSeparateReq) (*model.BalanceSeparateRet, error) {
+	return doRequest[model.BalanceSeparateReq, model.BalanceSeparateRet](c, balanceSeparateUrl, req)
 }

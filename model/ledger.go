@@ -589,3 +589,33 @@ type BalanceQueryRet struct {
 	// 当前可用余额（单位：元）
 	CurBalance float64 `json:"curBalance"`
 }
+
+// Request 代表请求报文的结构体
+type BalanceSeparateReq struct {
+	MerchantNo    string     `json:"merchant_no"`          // 必填字段：商户号，唯一标识商户
+	OutSeparateNo string     `json:"out_separate_no"`      // 必填字段：商户分账指令流水号，每个商户号下唯一，用于标识一次分账操作
+	TotalAmt      string     `json:"total_amt"`            // 必填字段：分账总金额，单位为分，表示此次分账的总金额
+	LklOrgNo      string     `json:"lkl_org_no,omitempty"` // 可选字段：拉卡拉机构编号，用于标识拉卡拉的机构，若未提供则为空
+	CalType       string     `json:"cal_type,omitempty"`   // 可选字段：分账计算类型，0 表示按照指定金额分账，1 表示按照指定比例分账，默认为 0
+	NotifyURL     string     `json:"notify_url,omitempty"` // 可选字段：回调地址，分账或分账撤销时，异步接口通过该地址通知商户最终处理结果，若不传则不回调
+	RecvDatas     []RecvData `json:"recv_datas"`           // 必填字段（至少应有一个接收数据对象）：分账接收数据对象列表，包含每个接收方的分账信息
+}
+
+// RecvData 代表分账接收数据对象的结构体
+type RecvData struct {
+	RecvMerchantNo string `json:"recv_merchant_no,omitempty"` // 可选字段：接收方商户号，分给自己时使用，需和 MerchantNo 一样，否则检查报错；分账接收方商户号和分账接收方只能填写一个
+	RecvNo         string `json:"recv_no,omitempty"`          // 可选字段：分账接收方编号，分给他人时使用；分账接收方商户号和分账接收方只能填写一个
+	SeparateValue  string `json:"separate_value"`             // 必填字段：分账数值，当 CalType 为 0 时，表示固定金额（单位：分）；当 CalType 为 1 时，表示比例（单位：百分比的小数值，如 0.55 表示 55%）
+}
+
+type BalanceSeparateRet struct {
+	Code     string `json:"code"`
+	Msg      string `json:"msg"`
+	RetTime  string `json:"resp_time"`
+	RespData struct {
+		SeparateNo    string `json:"separate_no"`         // 必填字段：分账指令流水号，由分账系统生成的唯一流水号
+		OutSeparateNo string `json:"out_separate_no"`     // 必填字段：商户分账指令流水号，与请求报文中的商户外部订单号一致
+		Status        string `json:"status,omitempty"`    // 可选字段：分账状态，可能的值包括：处理中（PROCESSING）、已受理（ACCEPTED）、成功（SUCCESS）、失败（FAIL）
+		TotalAmt      string `json:"total_amt,omitempty"` // 可选字段：分账总金额	单位：分
+	} `json:"resp_data"`
+}
