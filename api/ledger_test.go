@@ -335,3 +335,38 @@ func TestBalanceSeparate(t *testing.T) {
 	fmt.Println(ret)
 	fmt.Println(err)
 }
+
+func TestBalanceCancel(t *testing.T) {
+	client := NewClient(model.APPID_TEST, model.SERIAL_NO_TEST, model.KEY_PATH_TEST, model.CERT_PATH_TEST, false, "")
+	orderId := model.CreateOrderStr()
+	req := model.BalanceCancelReq{
+		MerchantNo:          model.MERCHANT_NO_TEST,
+		OutSeparateNo:       orderId,
+		TotalAmt:            "100",
+		OriginOutSeparateNo: "131312",
+	}
+
+	ret, err := client.balanceCancel(&req)
+	fmt.Println(ret)
+	fmt.Println(err)
+}
+
+func TestBalanceFallback(t *testing.T) {
+	client := NewClient(model.APPID_TEST, model.SERIAL_NO_TEST, model.KEY_PATH_TEST, model.CERT_PATH_TEST, false, "")
+	orderId := model.CreateOrderStr()
+	req := model.BalanceFallbackReq{
+		MerchantNo:          model.MERCHANT_NO_TEST,
+		OutSeparateNo:       orderId,
+		TotalAmt:            "10",
+		OriginOutSeparateNo: "131312",
+	}
+	applyReg := model.OriginRecvData{
+		RecvNo: "1",
+		Amt:    "10",
+	}
+	req.OriginRecvDatas = append(req.OriginRecvDatas, applyReg)
+
+	ret, err := client.balanceFallback(&req)
+	fmt.Println(ret)
+	fmt.Println(err)
+}

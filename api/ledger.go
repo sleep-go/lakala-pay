@@ -17,6 +17,8 @@ const (
 	applyUnBindUrl          = "/api/v2/mms/openApi/ledger/applyUnBind"
 	balanceQueryUrl         = "/api/v2/laep/industry/ewalletBalanceQuery"
 	balanceSeparateUrl      = "/api/v3/sacs/balanceSeparate"
+	balanceCancelUrl        = "/api/v3/sacs/balanceCancel"
+	balanceFallbackUrl      = "/api/v3/sacs/balanceFallback"
 )
 
 // 文件上传
@@ -74,7 +76,17 @@ func (c *Client) balanceQuery(req *model.BalanceQueryReq) (*model.BalanceQueryRe
 	return doRequest[model.BalanceQueryReq, model.BalanceQueryRet](c, balanceQueryUrl, req)
 }
 
-// 账户余额查询
+// 余额分账
 func (c *Client) balanceSeparate(req *model.BalanceSeparateReq) (*model.BalanceSeparateRet, error) {
 	return doRequest[model.BalanceSeparateReq, model.BalanceSeparateRet](c, balanceSeparateUrl, req)
+}
+
+// 余额分账撤销
+func (c *Client) balanceCancel(req *model.BalanceCancelReq) (*model.BalanceCancelRet, error) {
+	return doRequest[model.BalanceCancelReq, model.BalanceCancelRet](c, balanceCancelUrl, req)
+}
+
+// 余额分账回退
+func (c *Client) balanceFallback(req *model.BalanceFallbackReq) (*model.BalanceFallbackRet, error) {
+	return doRequest[model.BalanceFallbackReq, model.BalanceFallbackRet](c, balanceFallbackUrl, req)
 }

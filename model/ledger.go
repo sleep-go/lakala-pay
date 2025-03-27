@@ -619,3 +619,104 @@ type BalanceSeparateRet struct {
 		TotalAmt      string `json:"total_amt,omitempty"` // 可选字段：分账总金额	单位：分
 	} `json:"resp_data"`
 }
+
+type BalanceCancelReq struct {
+	// MerchantNo 分账方商户号，必填字段
+	// 字段类型：String
+	// 长度：32
+	// 描述：表示进行分账操作的商户号
+	MerchantNo string `json:"merchant_no" validate:"required,max=32"`
+
+	// OriginSeparateNo 原分账指令流水，条件必填字段
+	// 字段类型：String
+	// 长度：32
+	// 描述：分账指令接口返回的分账流水
+	// 取值说明：origin_out_separate_no 和该字段至少二选一，优先级: origin_separate_no > origin_out_separate_no
+	OriginSeparateNo string `json:"origin_separate_no,omitempty" validate:"max=32"`
+
+	// OriginOutSeparateNo 原商户分账指令流水号，条件必填字段
+	// 字段类型：String
+	// 长度：32
+	// 描述：分账指令请求时，入参中的 origin_separate_no
+	// 取值说明：origin_out_separate_no 和 OriginSeparateNo 至少二选一，优先级: origin_separate_no > origin_out_separate_no
+	OriginOutSeparateNo string `json:"origin_out_separate_no,omitempty" validate:"max=32"`
+
+	// OutSeparateNo 商户分账指令流水号，必填字段
+	// 字段类型：String
+	// 长度：32
+	// 描述：商户系统中的分账指令流水号
+	OutSeparateNo string `json:"out_separate_no" validate:"required,max=32"`
+
+	// TotalAmt 撤销金额，必填字段
+	// 字段类型：String
+	// 长度：12
+	// 描述：用于金额校验，需与原分账金额一致，否则校验失败
+	TotalAmt string `json:"total_amt" validate:"required,max=12"`
+}
+
+type BalanceCancelRet struct {
+	Code     string `json:"code"`
+	Msg      string `json:"msg"`
+	RetTime  string `json:"resp_time"`
+	RespData struct {
+		// OutSeparateNo 商户分账指令流水号，必填字段
+		// 字段类型：String
+		// 长度：32
+		// 描述：请求中透传的商户分账指令流水号
+		OutSeparateNo string `json:"out_separate_no" validate:"required,max=32"`
+
+		// SeparateNo 分账撤销流水号，必填字段
+		// 字段类型：String
+		// 长度：32
+		// 描述：分账系统生成的唯一流水号
+		SeparateNo string `json:"separate_no" validate:"required,max=32"`
+
+		// OriginSeparateNo 原分账指令流水，条件必填字段
+		// 字段类型：String
+		// 长度：32
+		// 描述：请求中透传的原分账指令流水
+		OriginSeparateNo string `json:"origin_separate_no,omitempty" validate:"max=32"`
+
+		// TotalAmt 撤销金额，必填字段
+		// 字段类型：String
+		// 长度：15
+		// 描述：撤销金额，单位为分，需和分账总金额一致，否则校验报错
+		TotalAmt string `json:"total_amt" validate:"required,max=15"`
+
+		// Status 分账状态，条件必填字段
+		// 字段类型：String
+		// 长度：16
+		// 描述：分账处理状态
+		// 取值说明：处理中：PROCESSING, 已受理：ACCEPTED, 成功：SUCCESS, 失败：FAIL
+		Status string `json:"status,omitempty" validate:"max=16"`
+	} `json:"resp_data"`
+}
+
+type BalanceFallbackReq struct {
+	MerchantNo          string           `json:"merchant_no"`                      // 商户号，必填字段
+	OriginSeparateNo    string           `json:"origin_separate_no,omitempty"`     // 原分账指令流水，可选字段
+	OutSeparateNo       string           `json:"out_separate_no"`                  // 商户分账指令流水号，必填字段
+	OriginOutSeparateNo string           `json:"origin_out_separate_no,omitempty"` // 原商户分账指令流水号，可选字段
+	FallbackReason      string           `json:"fallback_reason,omitempty"`        // 回退原因，可选字段
+	TotalAmt            string           `json:"total_amt"`                        // 总金额，必填字段
+	OriginRecvDatas     []OriginRecvData `json:"origin_recv_datas"`                // 原分账接收数据对象列表，必填字段（只能包含一个对象）
+}
+
+// OriginRecvData 表示原分账接收数据对象
+type OriginRecvData struct {
+	RecvNo string `json:"recv_no,omitempty"` // 分账接收方编号，可选字段
+	Amt    string `json:"amt,omitempty"`     // 回退金额，可选字段
+}
+
+type BalanceFallbackRet struct {
+	Code     string `json:"code"`
+	Msg      string `json:"msg"`
+	RetTime  string `json:"resp_time"`
+	RespData struct {
+		OutSeparateNo    string `json:"out_separate_no"`              // 商户分账指令请求流水号，必填字段，请求透返
+		TotalAmt         string `json:"total_amt"`                    // 回退金额，必填字段
+		OriginSeparateNo string `json:"origin_separate_no,omitempty"` // 原分账指令流水号，可选字段，请求透返
+		Status           string `json:"status,omitempty"`             // 分账状态，可选字段，取值说明：处理中：PROCESSING, 已受理：ACCEPTED, 成功：SUCCESS, 失败：FAIL
+		SeparateNo       string `json:"separate_no"`                  // 分账回退流水号，必填字段，分账系统生成，系统唯一
+	} `json:"resp_data"`
+}

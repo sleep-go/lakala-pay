@@ -128,6 +128,8 @@ func doRequest[T any, D any](c *Client, url string, req *T) (*D, error) {
 	request.Header.Set("Accept", "application/json")
 	request.Header.Set("Authorization", auth)
 	resp, err := c.Http.Do(request)
+	//body, err := io.ReadAll(resp.Body)
+	//fmt.Println(string(body))
 	if err != nil {
 		return nil, err
 	}
