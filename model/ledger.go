@@ -720,3 +720,68 @@ type BalanceFallbackRet struct {
 		SeparateNo       string `json:"separate_no"`                  // 分账回退流水号，必填字段，分账系统生成，系统唯一
 	} `json:"resp_data"`
 }
+
+type BalanceSeparateQueryReq struct {
+	MerchantNo    string `json:"merchant_no"`               // 分账方商户号，必填，长度32
+	SeparateNo    string `json:"separate_no,omitempty"`     // 分账指令流水号，条件必填（separate_no 或 out_separate_no 至少二选一），优先级: separate_no > out_separate_no，长度32
+	OutSeparateNo string `json:"out_separate_no,omitempty"` // 商户分账指令流水号，条件必填（separate_no 或 out_separate_no 至少二选一），优先级: separate_no > out_separate_no，长度32
+}
+
+type BalanceSeparateQueryRet struct {
+	Code     string `json:"code"`
+	Msg      string `json:"msg"`
+	RetTime  string `json:"resp_time"`
+	RespData struct {
+		SeparateNo        string       `json:"separate_no"`                   // 分账指令流水 请求透返
+		OutSeparateNo     string       `json:"out_separate_no"`               // 商户分账指令流水号 请求透返
+		CmdType           string       `json:"cmd_type"`                      // 指令类型 SEPARATE：分账 CANCEL：分账撤销 FALLBACK：分账回退
+		CalType           string       `json:"cal_type,omitempty"`            // 分账计算类型 0 按照指定金额。1 按照指定比例，默认 0 （cmd_type为SEPARATE分账指令类型才有值）
+		SeparateDate      string       `json:"separate_date,omitempty"`       // 分账日期 yyyyMMdd
+		FinishDate        string       `json:"finish_date,omitempty"`         // 完成日期 yyyyMMdd
+		TotalAmt          string       `json:"total_amt,omitempty"`           // 发生总金额 单位：分
+		Status            string       `json:"status"`                        // 分账状态
+		FinalStatus       string       `json:"final_status"`                  // 处理状态
+		ActualSeparateAmt string       `json:"actual_separate_amt,omitempty"` // 实分金额 若该笔分账收取手续费，则该字段有值
+		TotalFeeAmt       string       `json:"total_fee_amt,omitempty"`       // 手续费金额 若该笔分账收取手续费，则该字段有值
+		AccResultDesc     string       `json:"acc_result_desc,omitempty"`     // 账户处理错误描述 若账户系统处理失败，失败原因会在此字段体现
+		DetailData        []DetailData `json:"detail_datas"`
+	} `json:"resp_data"`
+}
+
+// DetailData 表示明细数据的结构体
+type DetailData struct {
+	SeparateSubNo  string `json:"separate_sub_no"`            // 分账子流水号
+	RecvMerchantNo string `json:"recv_merchant_no,omitempty"` // 接收方商户号
+	RecvNo         string `json:"recv_no,omitempty"`          // 接收方编号
+	Amt            string `json:"amt"`                        // 分账金额
+	ActualAmt      string `json:"actual_amt,omitempty"`       // 实分金额 若该笔分账收取手续费，则该字段有值
+	FeeAmt         string `json:"fee_amt,omitempty"`          // 手续费金额 若该笔分账收取手续费，则该字段有值
+}
+
+type SeparateNoticeReq struct {
+	SeparateNo    string               `json:"separate_no"`             // 必填字段，分账指令流水号，用于请求透传，唯一标识一次分账指令
+	OutSeparateNo string               `json:"out_separate_no"`         // 必填字段，商户分账指令流水号，用于请求透传，商户系统内部的分账指令标识
+	CmdType       string               `json:"cmd_type"`                // 必填字段，指令类型，可能的值为 SEPARATE（分账）、CANCEL（分账撤销）、FALLBACK（分账回退）
+	LogNo         string               `json:"log_no,omitempty"`        // 可选字段，拉卡拉对账单流水号，用于关联对账单
+	LogDate       string               `json:"log_date,omitempty"`      // 可选字段，交易日期，格式为 yyyyMMdd，用于查清结算
+	CalType       string               `json:"cal_type,omitempty"`      // 可选字段，分账计算类型，0 表示按照指定金额分账，1 表示按照指定比例分账，默认为 0
+	SeparateType  string               `json:"separate_type,omitempty"` // 可选字段，分账接收类型，0 表示全部分账到商户本身，1 表示分账到多方，默认为 1
+	SeparateDate  string               `json:"separate_date,omitempty"` // 可选字段，分账日期，格式为 yyyyMMdd
+	FinishDate    string               `json:"finish_date,omitempty"`   // 可选字段，完成日期，格式为 yyyyMMdd
+	TotalAmt      string               `json:"total_amt,omitempty"`     // 可选字段，发生总金额，单位为分
+	Status        string               `json:"status"`                  // 必填字段，分账状态，可能的值为 ACCEPTED（已受理）、PROCESSING（处理中）、FAIL（失败）、SUCCESS（成功）、CANCELING（撤销中）、CANCELED（撤销成功）、CANCEL_FAIL（撤销失败）、FALLBACKING（回退中）、FALLBACK_END（回退结束）
+	FinalStatus   string               `json:"final_status"`            // 必填字段，处理状态，可能的值为 ACCEPTED（已受理）、PROCESSING（处理中）、FAIL（失败）、SUCCESS（成功）
+	DetailData    []SeparateNoticeData `json:"detail_datas"`            // 必填字段（至少应包含一个明细项时），明细数据列表，包含分账接收方的具体信息
+}
+
+// SeparateNoticeData 表示分账明细数据的结构，用于描述每个接收方的分账信息
+type SeparateNoticeData struct {
+	RecvMerchantNo string `json:"recv_merchant_no,omitempty"` // 可选字段，接收方商户号，标识接收分账的商户
+	RecvNo         string `json:"recv_no,omitempty"`          // 可选字段，接收方编号，接收方在商户系统内的标识
+	Amt            string `json:"amt,omitempty"`              // 可选字段，分账金额，单位为分
+}
+
+type SeparateNoticeRet struct {
+	Code    string `json:"code"`              // 必填字段，返回码，受理成功时必须返回 SUCCESS，否则会重复通知
+	Message string `json:"message,omitempty"` // 可选字段，返回信息，用于描述返回的具体信息或错误详情
+}

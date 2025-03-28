@@ -370,3 +370,16 @@ func TestBalanceFallback(t *testing.T) {
 	fmt.Println(ret)
 	fmt.Println(err)
 }
+
+func TestBalanceSeparateQuery(t *testing.T) {
+	client := NewClient(model.APPID_TEST, model.SERIAL_NO_TEST, model.KEY_PATH_TEST, model.CERT_PATH_TEST, false, "")
+	orderId := model.CreateOrderStr()
+	req := model.BalanceSeparateQueryReq{
+		MerchantNo:    model.MERCHANT_NO_TEST,
+		OutSeparateNo: orderId, //应该是分账时的orderid
+	}
+
+	ret, err := client.balanceSeparateQuery(&req)
+	fmt.Println(ret)
+	fmt.Println(err)
+}

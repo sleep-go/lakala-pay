@@ -19,6 +19,7 @@ const (
 	balanceSeparateUrl      = "/api/v3/sacs/balanceSeparate"
 	balanceCancelUrl        = "/api/v3/sacs/balanceCancel"
 	balanceFallbackUrl      = "/api/v3/sacs/balanceFallback"
+	balanceSeparateQueryUrl = "/api/v3/sacs/balance_separate_query_plus"
 )
 
 // 文件上传
@@ -90,3 +91,12 @@ func (c *Client) balanceCancel(req *model.BalanceCancelReq) (*model.BalanceCance
 func (c *Client) balanceFallback(req *model.BalanceFallbackReq) (*model.BalanceFallbackRet, error) {
 	return doRequest[model.BalanceFallbackReq, model.BalanceFallbackRet](c, balanceFallbackUrl, req)
 }
+
+// 分账结果查询
+func (c *Client) balanceSeparateQuery(req *model.BalanceSeparateQueryReq) (*model.BalanceSeparateQueryRet, error) {
+	return doRequest[model.BalanceSeparateQueryReq, model.BalanceSeparateQueryRet](c, balanceSeparateQueryUrl, req)
+}
+
+//分账结果通知
+//https://o.lakala.com/#/home/document/detail?id=393
+//SeparateNoticeReq,　SeparateNoticeRet 已定义
