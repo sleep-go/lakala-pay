@@ -121,3 +121,41 @@ func TestRefundQuery(t *testing.T) {
 	fmt.Println(ret.ResData.RefundList[0].PayerAmount)
 	fmt.Println(ret.ResData.RefundList[0].RefundAmount)
 }
+
+func TestRfdRefund(t *testing.T) {
+	RefundOrderId := model.CreateOrderStr()
+	fmt.Println(RefundOrderId)
+	OriginLogNo := "66200819480353"
+	client := NewClient(model.APPID_TEST, model.SERIAL_NO_TEST, model.KEY_PATH_TEST, model.CERT_PATH_TEST, false, "")
+	req := model.RfdRefundRequest{
+		MerchantNo:   model.MERCHANT_NO_TEST,
+		TermNo:       "D9296381",    //model.TERM_NO_TEST,
+		OutTradeNo:   RefundOrderId, //必传，退款查询时有用
+		RefundAmount: "1",
+		OriginLogNo:  OriginLogNo,
+		LocationInfo: model.LocationInfo{
+			RequestIP: "192.168.23.165",
+			Location:  "",
+		},
+	}
+	ret, err := client.OrderRfdRefund(&req)
+	fmt.Println(ret)
+	fmt.Println(err)
+	fmt.Println(ret.RefundData.RefundAmount)
+	fmt.Println(ret.RefundData.TradeNo)
+}
+
+func TestRfdRefundQuery(t *testing.T) {
+	RefundQueryOrderId := model.CreateOrderStr()
+	OutTradeNo := "2025041710282754481211" //发起退款时的out_trade_no
+	fmt.Println(RefundQueryOrderId)
+	client := NewClient(model.APPID_TEST, model.SERIAL_NO_TEST, model.KEY_PATH_TEST, model.CERT_PATH_TEST, false, "")
+	req := model.RfdRefundQueryRequest{
+		MerchantNo: model.MERCHANT_NO_TEST,
+		TermNo:     "D9296381", //model.TERM_NO_TEST,
+		OutTradeNo: OutTradeNo,
+	}
+	ret, err := client.OrderRfdRefundQuery(&req)
+	fmt.Println(ret)
+	fmt.Println(err)
+}

@@ -10,11 +10,13 @@ import (
 )
 
 const (
-	specialCreateUrl = "/api/v3/ccss/counter/order/special_create"
-	orderQueryUrl    = "/api/v3/ccss/counter/order/query"
-	orderCloseUrl    = "/api/v3/ccss/counter/order/close"
-	refundUrl        = "/api/v3/lams/trade/trade_refund"
-	refundQueryUrl   = "/api/v3/lams/trade/trade_refund_query"
+	specialCreateUrl  = "/api/v3/ccss/counter/order/special_create"
+	orderQueryUrl     = "/api/v3/ccss/counter/order/query"
+	orderCloseUrl     = "/api/v3/ccss/counter/order/close"
+	refundUrl         = "/api/v3/lams/trade/trade_refund"
+	refundQueryUrl    = "/api/v3/lams/trade/trade_refund_query"
+	rfdRefundUrl      = "/api/v3/rfd/refund_front/refund"
+	rfdRefundQueryUrl = "/api/v3/rfd/refund_front/refund_query"
 )
 
 // OrderSpecialCreate 收银台订单创建
@@ -66,4 +68,14 @@ func (c *Client) OrderRefund(req *model.RefundRequest) (resp *model.RefundRespon
 // RefundQuery 退货查询
 func (c *Client) RefundQuery(req *model.RefundQueryRequest) (resp *model.RefundQueryResponse, err error) {
 	return doRequest[model.RefundQueryRequest, model.RefundQueryResponse](c, refundQueryUrl, req)
+}
+
+// 扫码银行卡退货
+func (c *Client) OrderRfdRefund(req *model.RfdRefundRequest) (resp *model.RfdRefundResponse, err error) {
+	return doRequest[model.RfdRefundRequest, model.RfdRefundResponse](c, rfdRefundUrl, req)
+}
+
+// 扫码银行卡退货 退货查询
+func (c *Client) OrderRfdRefundQuery(req *model.RfdRefundQueryRequest) (resp *model.RfdRefundQueryResponse, err error) {
+	return doRequest[model.RfdRefundQueryRequest, model.RfdRefundQueryResponse](c, rfdRefundQueryUrl, req)
 }
