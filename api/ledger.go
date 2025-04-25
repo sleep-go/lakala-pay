@@ -4,6 +4,7 @@ import (
 	"github.com/sleep-go/lakala-pay/model"
 )
 
+// 分账通相关接口
 const (
 	uploadUrl               = "/api/v2/mms/openApi/uploadFile"
 	cardBinUrl              = "/api/v2/mms/openApi/cardBin"

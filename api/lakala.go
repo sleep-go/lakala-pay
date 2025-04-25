@@ -11,9 +11,6 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
-	"github.com/sleep-go/lakala-pay/model"
-	"github.com/sleep-go/lakala-pay/util"
-	"github.com/tjfoc/gmsm/sm4"
 	"io"
 	"log"
 	"net/http"
@@ -22,6 +19,10 @@ import (
 	"reflect"
 	"strings"
 	"time"
+
+	"github.com/sleep-go/lakala-pay/model"
+	"github.com/sleep-go/lakala-pay/util"
+	"github.com/tjfoc/gmsm/sm4"
 )
 
 const (
@@ -113,8 +114,8 @@ func doRequest[T any, D any](c *Client, url string, req *T) (*D, error) {
 	} else {
 		reqStr = newBuffer[T](req)
 	}
-	fmt.Println("----------------")
-	fmt.Println("param:", reqStr.String())
+	log.Println("----------------")
+	log.Println("doRequest param:", reqStr.String(), "url:", c.Host+url)
 	auth, err := c.getAuthorization(reqStr.Bytes())
 	if err != nil {
 		return nil, err
@@ -123,13 +124,10 @@ func doRequest[T any, D any](c *Client, url string, req *T) (*D, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Accept", "application/json")
 	request.Header.Set("Authorization", auth)
 	resp, err := c.Http.Do(request)
-	//body, err := io.ReadAll(resp.Body)
-	//fmt.Println(string(body))
 	if err != nil {
 		return nil, err
 	}
@@ -145,7 +143,6 @@ func (c *Client) getAuthorization(body []byte) (string, error) {
 		log.Println("Failed to load private key:", err)
 		return "", err
 	}
-
 	signature, err := signMessage(message, privateKey)
 	if err != nil {
 		log.Println("Failed to sign message:", err)
