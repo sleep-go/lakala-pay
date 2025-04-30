@@ -3,11 +3,12 @@ package api
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/sleep-go/lakala-pay/model"
 	"log"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/sleep-go/lakala-pay/model"
 )
 
 func TestUpload(t *testing.T) {
@@ -36,7 +37,7 @@ func TestUpload(t *testing.T) {
 		ReqTime: fmt.Sprintf("%d", time.Now().Unix()),
 		ReqId:   fmt.Sprintf("%d", time.Now().UnixMicro()),
 	}
-	ret, err := client.upload(&upReg)
+	ret, err := client.Upload(&upReg)
 	fmt.Println(ret)
 	fmt.Println(err)
 }
@@ -54,7 +55,7 @@ func TestCardBin(t *testing.T) {
 		ReqTime: fmt.Sprintf("%d", time.Now().Unix()),
 		ReqId:   fmt.Sprintf("%d", time.Now().UnixMicro()),
 	}
-	ret, err := client.cardBin(&upReg)
+	ret, err := client.CardBin(&upReg)
 	fmt.Println(ret)
 	fmt.Println(err)
 }
@@ -84,7 +85,7 @@ func TestApply(t *testing.T) {
 		ReqId:   fmt.Sprintf("%d", time.Now().UnixMicro()),
 	}
 
-	ret, err := client.ledgerApply(&applyReg)
+	ret, err := client.LedgerApply(&applyReg)
 	fmt.Println(ret)
 	fmt.Println(err)
 }
@@ -111,7 +112,7 @@ func TestModifyLedgerMer(t *testing.T) {
 		ReqId:   fmt.Sprintf("%d", time.Now().UnixMicro()),
 	}
 
-	ret, err := client.modifyLedgerMer(&applyReg)
+	ret, err := client.ModifyLedgerMer(&applyReg)
 	fmt.Println(ret)
 	fmt.Println(err)
 }
@@ -132,7 +133,7 @@ func TestLedgerQuery(t *testing.T) {
 		ReqId:   fmt.Sprintf("%d", time.Now().UnixMicro()),
 	}
 
-	ret, err := client.ledgerQuery(&applyReg)
+	ret, err := client.LedgerQuery(&applyReg)
 	fmt.Println(ret)
 	fmt.Println(err)
 }
@@ -172,7 +173,7 @@ func TestApplyLedgerReceiver(t *testing.T) {
 		ReqId:   fmt.Sprintf("%d", time.Now().UnixMicro()),
 	}
 
-	ret, err := client.applyLedgerReceiver(&applyReg)
+	ret, err := client.ApplyLedgerReceiver(&applyReg)
 	fmt.Println(ret)
 	fmt.Println(err)
 }
@@ -210,7 +211,7 @@ func TestModifyLedgerReceiver(t *testing.T) {
 		ReqId:   fmt.Sprintf("%d", time.Now().UnixMicro()),
 	}
 
-	ret, err := client.modifyLedgerReceiver(&applyReg)
+	ret, err := client.ModifyLedgerReceiver(&applyReg)
 	fmt.Println(ret)
 	fmt.Println(err)
 }
@@ -233,7 +234,7 @@ func TestQueryReceiverDetail(t *testing.T) {
 		ReqId:   fmt.Sprintf("%d", time.Now().UnixMicro()),
 	}
 
-	ret, err := client.queryReceiverDetail(&applyReg)
+	ret, err := client.QueryReceiverDetail(&applyReg)
 	fmt.Println(ret)
 	fmt.Println(err)
 	if err == nil {
@@ -264,7 +265,7 @@ func TestApplyBind(t *testing.T) {
 		ReqId:   fmt.Sprintf("%d", time.Now().UnixMicro()),
 	}
 
-	ret, err := client.applyBind(&applyReg)
+	ret, err := client.ApplyBind(&applyReg)
 	fmt.Println(ret)
 	fmt.Println(err)
 }
@@ -292,7 +293,7 @@ func TestApplyUnBind(t *testing.T) {
 		ReqId:   fmt.Sprintf("%d", time.Now().UnixMicro()),
 	}
 
-	ret, err := client.applyUnBind(&applyReg)
+	ret, err := client.ApplyUnBind(&applyReg)
 	fmt.Println(ret)
 	fmt.Println(err)
 }
@@ -311,7 +312,7 @@ func TestBalanceQuery(t *testing.T) {
 		ReqId:   fmt.Sprintf("%d", time.Now().UnixMicro()),
 	}
 
-	ret, err := client.balanceQuery(&applyReg)
+	ret, err := client.BalanceQuery(&applyReg)
 	fmt.Println(ret)
 	fmt.Println(err)
 }
@@ -331,7 +332,7 @@ func TestBalanceSeparate(t *testing.T) {
 	}
 	req.RecvDatas = append(req.RecvDatas, applyReg)
 
-	ret, err := client.balanceSeparate(&req)
+	ret, err := client.BalanceSeparate(&req)
 	fmt.Println(ret)
 	fmt.Println(err)
 }
@@ -346,7 +347,7 @@ func TestBalanceCancel(t *testing.T) {
 		OriginOutSeparateNo: "131312",
 	}
 
-	ret, err := client.balanceCancel(&req)
+	ret, err := client.BalanceCancel(&req)
 	fmt.Println(ret)
 	fmt.Println(err)
 }
@@ -366,7 +367,7 @@ func TestBalanceFallback(t *testing.T) {
 	}
 	req.OriginRecvDatas = append(req.OriginRecvDatas, applyReg)
 
-	ret, err := client.balanceFallback(&req)
+	ret, err := client.BalanceFallback(&req)
 	fmt.Println(ret)
 	fmt.Println(err)
 }
@@ -379,7 +380,7 @@ func TestBalanceSeparateQuery(t *testing.T) {
 		OutSeparateNo: orderId, //应该是分账时的orderid
 	}
 
-	ret, err := client.balanceSeparateQuery(&req)
+	ret, err := client.BalanceSeparateQuery(&req)
 	fmt.Println(ret)
 	fmt.Println(err)
 }
