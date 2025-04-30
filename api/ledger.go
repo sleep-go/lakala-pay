@@ -1,6 +1,11 @@
 package api
 
 import (
+	"encoding/json"
+	"errors"
+	"io"
+	"net/http"
+
 	"github.com/sleep-go/lakala-pay/model"
 )
 
@@ -98,6 +103,29 @@ func (c *Client) BalanceSeparateQuery(req *model.BalanceSeparateQueryReq) (*mode
 	return doRequest[model.BalanceSeparateQueryReq, model.BalanceSeparateQueryRet](c, balanceSeparateQueryUrl, req)
 }
 
-//分账结果通知
-//https://o.lakala.com/#/home/document/detail?id=393
-//SeparateNoticeReq,　SeparateNoticeRet 已定义
+type SeparateCallbackResp struct {
+	Authorization string
+	Body          string
+	Notify        *model.SeparateNoticeReq
+}
+
+// NotifyCallback 分账结果通知
+// https://o.lakala.com/#/home/document/detail?id=393
+// SeparateNoticeReq,　SeparateNoticeRet 已定义
+func (c *Client) NotifyCallback(r *http.Request) (*SeparateCallbackResp, error) {
+	auth := r.Header.Get("Authorization")
+	body, err := io.ReadAll(r.Body)
+	var resp = &SeparateCallbackResp{
+		Authorization: auth,
+		Body:          string(body),
+		Notify:        new(model.SeparateNoticeReq),
+	}
+	if err != nil {
+		return resp, err
+	}
+	if !c.SignatureVerification(auth, string(body)) {
+		return resp, errors.New("签名验证失败")
+	}
+	err = json.Unmarshal(body, &resp.Notify)
+	return resp, err
+}

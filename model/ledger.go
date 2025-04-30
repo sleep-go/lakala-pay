@@ -758,6 +758,8 @@ type DetailData struct {
 	FeeAmt         string `json:"fee_amt,omitempty"`          // 手续费金额 若该笔分账收取手续费，则该字段有值
 }
 
+// SeparateNoticeReq 分账结果通知
+// 请求报文（系统发起，商户为接收方）
 type SeparateNoticeReq struct {
 	SeparateNo    string               `json:"separate_no"`             // 必填字段，分账指令流水号，用于请求透传，唯一标识一次分账指令
 	OutSeparateNo string               `json:"out_separate_no"`         // 必填字段，商户分账指令流水号，用于请求透传，商户系统内部的分账指令标识
