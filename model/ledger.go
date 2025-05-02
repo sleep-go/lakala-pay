@@ -753,7 +753,7 @@ type DetailData struct {
 	SeparateSubNo  string `json:"separate_sub_no"`            // 分账子流水号
 	RecvMerchantNo string `json:"recv_merchant_no,omitempty"` // 接收方商户号
 	RecvNo         string `json:"recv_no,omitempty"`          // 接收方编号
-	Amt            string `json:"amt"`                        // 分账金额
+	Amt            int    `json:"amt"`                        // 分账金额
 	ActualAmt      string `json:"actual_amt,omitempty"`       // 实分金额 若该笔分账收取手续费，则该字段有值
 	FeeAmt         string `json:"fee_amt,omitempty"`          // 手续费金额 若该笔分账收取手续费，则该字段有值
 }
