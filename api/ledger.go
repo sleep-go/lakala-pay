@@ -78,7 +78,7 @@ func (c *Client) ApplyUnBind(req *model.ApplyUnBindReq) (*model.ApplyUnBindRet, 
 	return doRequest[model.ApplyUnBindReq, model.ApplyUnBindRet](c, applyUnBindUrl, req)
 }
 
-// BalanceQuery 账户余额查询
+// BalanceQuery 账管家 - 账户余额查询
 func (c *Client) BalanceQuery(req *model.BalanceQueryReq) (*model.BalanceQueryRet, error) {
 	return doRequest[model.BalanceQueryReq, model.BalanceQueryRet](c, balanceQueryUrl, req)
 }
