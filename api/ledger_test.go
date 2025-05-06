@@ -306,10 +306,10 @@ func TestBalanceQuery(t *testing.T) {
 	}
 
 	applyReg := model.BalanceQueryReq{
-		Ver:     "1.0.0",
-		ReqData: req,
-		ReqTime: fmt.Sprintf("%d", time.Now().Unix()),
-		ReqId:   fmt.Sprintf("%d", time.Now().UnixMicro()),
+		Ver:       "1.0.0",
+		ReqData:   req,
+		Timestamp: time.Now().Unix(),
+		ReqId:     fmt.Sprintf("%d", time.Now().UnixMicro()),
 	}
 
 	ret, err := client.BalanceQuery(&applyReg)

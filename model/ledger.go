@@ -536,12 +536,11 @@ type ApplyUnBindRet struct {
 }
 
 type BalanceQueryReq struct {
-	Ver     string           `json:"ver"`
-	ReqTime string           `json:"reqTime"`
-	ReqId   string           `json:"reqId"`
-	ReqData BalanceQueryData `json:"reqData"`
+	Ver       string           `json:"ver"`
+	Timestamp int64            `json:"timestamp"`
+	ReqId     string           `json:"reqId"`
+	ReqData   BalanceQueryData `json:"reqData"`
 }
-
 type BalanceQueryData struct {
 	// bmcp机构号，必填，最大长度32
 	OrgNo string `json:"orgNo"`
@@ -561,36 +560,21 @@ type BalanceQueryData struct {
 	// 账户标志（01:一般户 03:子虚户）- 未上送则默认为01
 	MgtFlag string `json:"mgtFlag,omitempty"`
 }
-
 type BalanceQueryRet struct {
-	// 账号
-	PayNo string `json:"payNo"`
-
-	// 账户类型
-	PayType string `json:"payType"`
-
-	// 账户状态
-	// CLOSE: 销户
-	// NORMAL: 正常
-	// FREEZE: 冻结
-	// STOPPAY: 止付
-	AcctSt string `json:"acctSt"`
-
-	// 预付余额（单位：元）
-	ForceBalance float64 `json:"forceBalance"`
-
-	// 上日余额（单位：元）–该字段已废弃使用
-	// 注意：虽然此字段已废弃，但仍需保留以兼容旧系统或数据记录
-	HisBalance float64 `json:"hisBalance"`
-
-	// 实时余额（单位：元）
-	ReBalance float64 `json:"reBalance"`
-
-	// 当前可用余额（单位：元）
-	CurBalance float64 `json:"curBalance"`
+	RetCode  string `json:"retCode"`
+	RetMsg   string `json:"retMsg"`
+	RespData struct {
+		PayNo        string `json:"payNo"`
+		PayType      string `json:"payType"`
+		AcctSt       string `json:"acctSt"`
+		ForceBalance string `json:"forceBalance"`
+		HisBalance   string `json:"hisBalance"`
+		ReBalance    string `json:"reBalance"`
+		CurBalance   string `json:"curBalance"`
+	} `json:"respData"`
 }
 
-// Request 代表请求报文的结构体
+// BalanceSeparateReq 代表请求报文的结构体
 type BalanceSeparateReq struct {
 	MerchantNo    string     `json:"merchant_no"`          // 必填字段：商户号，唯一标识商户
 	OutSeparateNo string     `json:"out_separate_no"`      // 必填字段：商户分账指令流水号，每个商户号下唯一，用于标识一次分账操作
