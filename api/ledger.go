@@ -109,10 +109,10 @@ type SeparateCallbackResp struct {
 	Notify        *model.SeparateNoticeReq
 }
 
-// NotifyCallback 分账结果通知
+// SeparateNotifyCallback 分账结果通知
 // https://o.lakala.com/#/home/document/detail?id=393
 // SeparateNoticeReq,　SeparateNoticeRet 已定义
-func (c *Client) NotifyCallback(r *http.Request) (*SeparateCallbackResp, error) {
+func (c *Client) SeparateNotifyCallback(r *http.Request) (*SeparateCallbackResp, error) {
 	auth := r.Header.Get("Authorization")
 	body, err := io.ReadAll(r.Body)
 	var resp = &SeparateCallbackResp{
